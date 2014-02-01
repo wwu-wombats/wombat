@@ -1,0 +1,14 @@
+{ name  : /home/pierceg2/testing,
+  t     : dir,
+  items : [
+           { name  : /home/pierceg2/tesing/file_1,
+             t     : file,
+           },
+           { name  : /home/pierceg2/tesing/sub_dir_1,
+             t     : dir,
+             items : [
+
+             ]
+           }
+  ]
+}

@@ -18,37 +18,6 @@ class EventHandler(FileSystemEventHandler):
         print(event.event_type)
         self.sync(event)
 
-    def on_moved(self, event):
-        """
-        On a move event a signal needs to be sent to the server to change a
-        file's name and path.
-        """
-        pass
-
-
-    def on_created(self, event):
-        """
-        On a create event we should just have to sync file to the server.
-        """
-        pass
-
-
-    def on_deleted(self, event):
-        """
-        On a delete event we would want to send a signal to the server to
-        indicate that something has been deleted and remove it from the server
-        """
-        pass
-
-
-    def on_modified(self, event):
-        """
-        On a modified event we want to update the file on the server with
-        changes. Since we are worrying about encryption I cannot think of an
-        easy way to only send diffs or something like that to save bandwidth.
-        """
-        pass
-
 
     def eventify(self, event_type):
         if event_type == 'modified':
@@ -71,6 +40,11 @@ class EventHandler(FileSystemEventHandler):
                                "src" : event.src_path,
                                "dest" : event.dest_path
                                })
+            self.connection.post(self.url+"/api/"+event_thing,
+                                 data=data,
+                                 headers=headers)
+            return
+
 
         elif event.event_type == "created":
             f_data = None

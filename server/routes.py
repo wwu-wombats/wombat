@@ -148,7 +148,8 @@ def api_list(directory = None):
 @route('/api/tree/')
 @authorize()
 def api_tree():
-    items = { 'items': list_dir(os.path.abspath(FILE_ROOT))}
+    user_path = os.path.join(os.path.abspath(FILE_ROOT), aaa.current_user.username)
+    items = { 'name': "/", 't': 'dir', 'items': list_dir(user_path)}
     return items
 
 def list_dir(root):
@@ -156,7 +157,8 @@ def list_dir(root):
     if os.path.isdir(root):
         for entry in os.listdir(root):
             path = os.path.join(root, entry)
-            it = {'name': str(entry), 't':'', 'items':'' }
+            user_path = os.path.join(os.path.abspath(FILE_ROOT),aaa.current_user.username)
+            it = {'name': '/' + str(os.path.relpath(path, user_path)), 't':'', 'items':'' }
             if os.path.isdir(path):
                  it['t'] = 'dir'
                  it['items'] = list_dir(path)
