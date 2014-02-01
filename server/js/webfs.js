@@ -14,16 +14,38 @@ $(function() {
     function getHash() {
         var re = hashre.exec(window.location.hash);
         console.log(re);
-        return re[1] || '';
+        if (re) {
+            return re[1] || '';
+        } else {
+            return '';
+        }
     }
-    var hash = getHash();
-    switch (hash) {
-        default:
+    var inithash = getHash();
+
+    function loadDir() {
         // list files
-        $.get("/api/list/" + hash, function(data) {
+        $.get("/api/list/" + getHash(), function(data) {
             console.log(data);
-            $('#list').html(Templates.list(data));
+            $('#list').html(Templates.list(_.extend(data, { path: getHash() })));
+            $('#list li.item.dir').click(function(e) {
+                console.log(e);
+                window.location.hash = '/' + getHash() + $.trim($(this).text());
+                loadDir();
+            });
+            $('#list li.item.up').click(function(e) {
+                path = window.location.hash.split('/');
+                path.pop();
+                console.log(path);
+                window.location.hash = path;
+                loadDir();
+            });
         }, "json");
+    }
+
+
+    switch (getHash()) {
+        default:
+            loadDir();
     }
 
     function handleFileSelect(evt) {

@@ -11,9 +11,9 @@
     <h2>Welcome to Wombat</h2>
     <p>Welcome {{current_user.username}}, your role is: {{current_user.role}}</p>
 
-    <ul id="list">
+    <div id="list">
 
-    </ul>
+    </div>
 
     <input type="file" id="files" name="files[]" multiple>
     <output id="uploaded"><ul></ul></output>
@@ -23,9 +23,13 @@
     <script src="/js/libs/underscore-min.js"></script>
 
     <script id="template-list" type="javascript/template">
-        <% _.each(items, function(item) { %>
-            <li class="item"><%= item %></li>
-        <% }); %>
+        <p>You are at: <%= path %>
+        <ul>
+            <li class="item up">..</li>
+            <% _.each(items, function(item) { %>
+                <li class="item <%= item.t %>"><%= item.name %></li>
+            <% }); %>
+        </ul>
     </script>
     <script id="templates">
         window.Templates = {};
