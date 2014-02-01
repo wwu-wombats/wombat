@@ -1,4 +1,7 @@
+
 $(function() {
+    navigator.saveBlob = navigator.saveBlob || navigator.msSaveBlob || navigator.mozSaveBlob || navigator.webkitSaveBlob;
+    window.saveAs = window.saveAs || window.webkitSaveAs || window.mozSaveAs || window.msSaveAs;
     if (window.File && window.FileReader && window.FileList && window.Blob) {
         // G2G
         document.getElementById('files').addEventListener('change', handleFileSelect, false);
@@ -124,13 +127,16 @@ $(function() {
                 reader.onprogress = (function(filepart) {
                     return function(e) {
                         progressevents++;
-                        var text = reader.result;
+                        var img = $('<img />').attr('src', e.srcElement.result);
+                        var text = e.srcElement.result;
+                        console.log(text);
                         var message = JSON.stringify({
                             part: progressevents,
                             payload: text,
                             title: filename,
                             secretkey: SECRETKEY
                         });
+                        console.log(message);
                         encryptWorker.postMessage(message);
                         // Now we've got some funny stuff with concurrency.
                         // potentially we'll have a bunch of stuff sent out
@@ -138,7 +144,12 @@ $(function() {
                         // before sending off to the api.
                     };
                 })();
-                reader.readAsText(f);
+                console.log(filename.split('.').pop());
+                if (filename.split('.').pop() == "png") {
+                    reader.readAsDataURL(f);
+                } else {
+                    reader.readAsText(f);
+                }
             })()
         }
     }
@@ -149,12 +160,17 @@ $(function() {
             decryptWorker.onmessage = function(e) {
                 var recv = JSON.parse(e.data);
                 console.log(recv);
-
                 var file = new Blob([recv.payload], {
                     name: filename,
-                    type: "image/png"
                 });
-                window.open(window.URL.createObjectURL(file));
+                //var img = $('<img id="dynamic">');
+                //img.attr('src', recv.payload);
+                //img.appendTo('#list');
+                if (filename.split('.').pop() == "png") {
+                    window.open(recv.payload);
+                } else {
+                    window.open(window.URL.createObjectURL(file));
+                }
 
                 /*window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
 

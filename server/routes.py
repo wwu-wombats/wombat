@@ -78,7 +78,7 @@ def api_create(filename):
 
         print("Uploaded: " + filename)
         with open(user_path, "w") as f:
-            f.write(payload.encode('ascii'))
+            f.write(payload)
 
 @post('/api/move')
 @post('/api/move/')
@@ -200,6 +200,10 @@ def static_js(filename):
 @route('/js/libs/<filename>')
 def static_js(filename):
     return static_file(filename, 'js/libs')
+
+@route('/js/libs/crypto/<filename>')
+def static_js(filename):
+    return static_file(filename, 'js/libs/crypto')
 
 @route('/sorry_page')
 def sorry_page():
