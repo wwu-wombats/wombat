@@ -9,7 +9,7 @@
 #  admin/admin, demo/demo
 
 import bottle
-from bottle import static_file
+from bottle import static_file, request, route, post, view
 from beaker.middleware import SessionMiddleware
 from cork import Cork
 import logging
@@ -41,14 +41,14 @@ session_opts = {
 app = SessionMiddleware(app, session_opts)
 
 ### API FUNCTIONS ###
-FILE_ROOT = "/home/littlec8/wombat/server/files"
+FILE_ROOT = "files"
 
-@bottle.route('/api')
-@bottle.route('/api/')
+@route('/api')
+@route('/api/')
 def api_status():
     return { 'status': 'online', 'time': datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')}
 
-@bottle.post('/api/create/<filename:path>')
+@post('/api/create/<filename:path>')
 @authorize()
 def api_create(filename):
     user = aaa.current_user.username
@@ -58,20 +58,20 @@ def api_create(filename):
     if not os.path.isdir(path):
         os.makedirs(path)
 
-    data = json.loads(bottle.request.body.read())
+    data = json.loads(request.body.read())
     payload = data[u'payload']
     print("Uploaded: " + filename)
     with open(user_path, "w") as f:
         f.write(payload.encode('ascii'))
 
-@bottle.route('/api/delete/<filename:path>')
+@route('/api/delete/<filename:path>')
 @authorize()
 def api_delete(filename):
     user = aaa.current_user.username
     path = os.path.join(os.path.abspath(FILE_ROOT), user, filename.strip('/'))
     os.remove(path)
 
-@bottle.route('/api/download/<filename:path>')
+@route('/api/download/<filename:path>')
 @authorize()
 def api_download(filename):
     user = aaa.current_user.username
@@ -80,9 +80,9 @@ def api_download(filename):
     root, name = os.path.split(path)
     return static_file(name, root)
 
-@bottle.route('/api/list')
-@bottle.route('/api/list/')
-@bottle.route('/api/list/<directory:path>')
+@route('/api/list')
+@route('/api/list/')
+@route('/api/list/<directory:path>')
 @authorize()
 def api_list(directory = None):
     user = aaa.current_user.username
@@ -101,12 +101,12 @@ def api_list(directory = None):
 ### Webpage items ###
 ### add webpages here and stuff ###
 
-@bottle.route('/')
+@route('/')
 @authorize()
-@bottle.view('index')
+@view('index')
 def index():
     """Only authenticated users can see this"""
-    #session = bottle.request.environ.get('beaker.session')
+    #session = request.environ.get('beaker.session')
     #aaa.require(fail_redirect='/login')
     return dict(
         current_user = aaa.current_user,
@@ -114,21 +114,21 @@ def index():
 
 # Static pages
 
-@bottle.route('/login')
-@bottle.view('login_form')
+@route('/login')
+@view('login_form')
 def login_form():
     """Serve login form"""
     return {}
 
-@bottle.route('/js/<filename>')
+@route('/js/<filename>')
 def static_js(filename):
     return static_file(filename, 'js')
 
-@bottle.route('/js/libs/<filename>')
+@route('/js/libs/<filename>')
 def static_js(filename):
     return static_file(filename, 'js/libs')
 
-@bottle.route('/sorry_page')
+@route('/sorry_page')
 def sorry_page():
     """Serve sorry page"""
     return '<p>Sorry, you are not authorized to perform this action</p>'
@@ -137,48 +137,48 @@ def sorry_page():
 # #  Bottle methods  # #
 
 def postd():
-    return bottle.request.forms
+    return request.forms
 
 
 def post_get(name, default=''):
-    return bottle.request.POST.get(name, default).strip()
+    return request.POST.get(name, default).strip()
 
 ### AUTHENTICATION METHODS ###
 
-@bottle.post('/login')
+@post('/login')
 def login():
     """Authenticate users"""
     username = post_get('username')
     password = post_get('password')
     aaa.login(username, password, success_redirect='/', fail_redirect='/login')
 
-@bottle.route('/user_is_anonymous')
+@route('/user_is_anonymous')
 def user_is_anonymous():
     if aaa.user_is_anonymous:
         return 'True'
 
     return 'False'
 
-@bottle.route('/logout')
+@route('/logout')
 def logout():
     aaa.logout(success_redirect='/login')
 
 
-@bottle.post('/register')
+@post('/register')
 def register():
     """Send out registration email"""
     aaa.register(post_get('username'), post_get('password'), post_get('email_address'))
     return 'Please check your mailbox.'
 
 
-@bottle.route('/validate_registration/:registration_code')
+@route('/validate_registration/:registration_code')
 def validate_registration(registration_code):
     """Validate registration, create user account"""
     aaa.validate_registration(registration_code)
     return 'Thanks. <a href="/login">Go to login</a>'
 
 
-@bottle.post('/reset_password')
+@post('/reset_password')
 def send_password_reset_email():
     """Send out password reset email"""
     aaa.send_password_reset_email(
@@ -188,23 +188,23 @@ def send_password_reset_email():
     return 'Please check your mailbox.'
 
 
-@bottle.route('/change_password/:reset_code')
-@bottle.view('password_change_form')
+@route('/change_password/:reset_code')
+@view('password_change_form')
 def change_password(reset_code):
     """Show password change form"""
     return dict(reset_code=reset_code)
 
 
-@bottle.post('/change_password')
+@post('/change_password')
 def change_password():
     """Change password"""
     aaa.reset_password(post_get('reset_code'), post_get('password'))
     return 'Thanks. <a href="/login">Go to login</a>'
 
-@bottle.route('/my_role')
+@route('/my_role')
 def show_current_user_role():
     """Show current user role"""
-    session = bottle.request.environ.get('beaker.session')
+    session = request.environ.get('beaker.session')
     print ("Session from simple_webapp", repr(session))
     aaa.require(fail_redirect='/login')
     return aaa.current_user.role
@@ -212,9 +212,9 @@ def show_current_user_role():
 
 # Admin-only pages
 
-@bottle.route('/admin')
+@route('/admin')
 @authorize(role="admin", fail_redirect='/sorry_page')
-@bottle.view('admin_page')
+@view('admin_page')
 def admin():
     """Only admin users can see this"""
     #aaa.require(role='admin', fail_redirect='/sorry_page')
@@ -226,7 +226,7 @@ def admin():
 
 
 @authorize(role="admin", fail_redirect='/sorry_page')
-@bottle.post('/create_user')
+@post('/create_user')
 def create_user():
     try:
         aaa.create_user(postd().username, postd().role, postd().password)
@@ -235,7 +235,7 @@ def create_user():
         return dict(ok=False, msg=e.message)
 
 
-@bottle.post('/delete_user')
+@post('/delete_user')
 @authorize(role="admin", fail_redirect='/sorry_page')
 def delete_user():
     try:
@@ -246,7 +246,7 @@ def delete_user():
         return dict(ok=False, msg=e.message)
 
 
-@bottle.post('/create_role')
+@post('/create_role')
 @authorize(role="admin", fail_redirect='/sorry_page')
 def create_role():
     try:
@@ -256,7 +256,7 @@ def create_role():
         return dict(ok=False, msg=e.message)
 
 
-@bottle.post('/delete_role')
+@post('/delete_role')
 @authorize(role="admin", fail_redirect='/sorry_page')
 def delete_role():
     try:
@@ -268,7 +268,6 @@ def delete_role():
 # #  Web application main  # #
 
 def main():
-
     # Start the Bottle webapp
     bottle.debug(True)
     bottle.run(host="0.0.0.0", app=app, quiet=False, reloader=True)
