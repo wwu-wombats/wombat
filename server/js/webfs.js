@@ -5,15 +5,15 @@ $(function() {
     } else {
         alert('File APIs are not supported in this browser.');
     }
-    console.log(window);
     var Templates = window.Templates;
     var encryptWorkerBlob = new Blob([document.querySelector('#encryptworker').textContent]);
+    var decryptWorkerBlob = new Blob([document.querySelector('#decryptworker').textContent]);
+    var SECRETKEY = "secretkey";
 
     // Read hash from url to get location.
     var hashre = /^#\/(.*)$/;
     function getHash() {
         var re = hashre.exec(window.location.hash);
-        console.log(re);
         if (re) {
             return re[1] || '';
         } else {
@@ -25,17 +25,17 @@ $(function() {
     function loadDir() {
         // list files
         $.get("/api/list/" + getHash(), function(data) {
-            console.log(data);
             $('#list').html(Templates.list(_.extend(data, { path: getHash() })));
             $('#list li.item.dir').click(function(e) {
-                console.log(e);
                 window.location.hash = '/' + getHash() + $.trim($(this).text());
                 loadDir();
+            });
+            $('#list li.item.file').click(function(e) {
+                downloadFile(getHash() + $.trim($(this).text()));
             });
             $('#list li.item.up').click(function(e) {
                 path = window.location.hash.split('/');
                 path.pop();
-                console.log(path);
                 window.location.hash = path;
                 loadDir();
             });
@@ -69,7 +69,7 @@ $(function() {
                     encryptedPayload = [];
                 console.log("processing " + filename);
                 encryptWorker.onmessage = function(e) {
-                    data = JSON.parse(e.data);
+                    var data = JSON.parse(e.data);
                     // we need to make sure we don't write this out of order.
                     encryptedPayload.push(data);
                     if (numprogresses > 0) {
@@ -103,44 +103,6 @@ $(function() {
                         });
                     }
                 }
-                var JsonFormatter = {
-                    stringify: function (cipherParams) {
-                        // create json object with ciphertext
-                        var jsonObj = {
-                            ct: cipherParams.ciphertext.toString(CryptoJS.enc.Base64)
-                        };
-
-                        // optionally add iv and salt
-                        if (cipherParams.iv) {
-                            jsonObj.iv = cipherParams.iv.toString();
-                        }
-                        if (cipherParams.salt) {
-                            jsonObj.s = cipherParams.salt.toString();
-                        }
-
-                        // stringify json object
-                        return JSON.stringify(jsonObj);
-                    },
-                    parse: function (jsonStr) {
-                        // parse json string
-                        var jsonObj = JSON.parse(jsonStr);
-
-                        // extract ciphertext from json object, and create cipher params object
-                        var cipherParams = CryptoJS.lib.CipherParams.create({
-                            ciphertext: CryptoJS.enc.Base64.parse(jsonObj.ct)
-                        });
-
-                        // optionally extract iv and salt
-                        if (jsonObj.iv) {
-                            cipherParams.iv = CryptoJS.enc.Hex.parse(jsonObj.iv)
-                        }
-                        if (jsonObj.s) {
-                            cipherParams.salt = CryptoJS.enc.Hex.parse(jsonObj.s)
-                        }
-
-                        return cipherParams;
-                    }
-                };
                 console.log(f);
                 reader.onload = function(e) {
                     console.log("loaded file");
@@ -157,7 +119,8 @@ $(function() {
                         var message = JSON.stringify({
                             part: progressevents,
                             payload: text,
-                            title: filename
+                            title: filename,
+                            secretkey: SECRETKEY
                         });
                         encryptWorker.postMessage(message);
                         // Now we've got some funny stuff with concurrency.
@@ -169,5 +132,19 @@ $(function() {
                 reader.readAsText(f);
             })()
         }
+    }
+    function downloadFile(filepath) {
+        console.log(filepath);
+        $.get("/api/download/" + filepath, function(data) {
+            var decryptWorker = new Worker(window.URL.createObjectURL(decryptWorkerBlob));
+            decryptWorker.onmessage = function(e) {
+                var recv = e.data;
+                console.log(recv);
+            }
+            decryptWorker.postMessage(JSON.stringify({
+                payload: data,
+                secretkey: SECRETKEY
+            }));
+        });
     }
 });
