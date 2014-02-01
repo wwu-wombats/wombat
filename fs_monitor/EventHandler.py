@@ -15,8 +15,8 @@ class EventHandler(FileSystemEventHandler):
         """
         On any event we want to possibly do logging. Anything else?
         """
-        print(event)
-
+        print(event.event_type)
+        self.sync(event)
 
     def on_moved(self, event):
         """
@@ -30,14 +30,7 @@ class EventHandler(FileSystemEventHandler):
         """
         On a create event we should just have to sync file to the server.
         """
-        if event.is_directory:
-            headers = {"Content-type" : "application/json"}
-            self.connection.post(self.url+"/api/create/"+event.src_path,
-                                 data=json.dumps({"payload" : event.src_path,
-                                                  "event" : "directory_created"}),
-                                 headers=headers)
-        else:
-            self.sync(event)
+        pass
 
 
     def on_deleted(self, event):
@@ -54,24 +47,84 @@ class EventHandler(FileSystemEventHandler):
         changes. Since we are worrying about encryption I cannot think of an
         easy way to only send diffs or something like that to save bandwidth.
         """
-        if not event.is_directory:
-            self.sync(event)
+        pass
+
+
+    def eventify(self, event_type):
+        if event_type == 'modified':
+            return "modify"
+        elif event_type == "deleted":
+            return "delete"
+        elif event_type == "moved":
+            return "move"
+        elif event_type == "created":
+            return "create"
 
 
     def sync(self, event):
-        f = open(event.src_path, "r")
-        data = f.read()
-        print("file created: ", event.src_path)
-
 
         headers = {"Content-type" : "application/json"}
-        self.connection.post(self.url+"/api/create/"+event.src_path,
-                             data=json.dumps({"payload" : data,
-                                              "event" : event.event_type}),
+        event_thing = self.eventify(event.event_type)
+        data = None
+        if event.event_type == "moved":
+            data = json.dumps({"payload" : '',
+                               "src" : event.src_path,
+                               "dest" : event.dest_path
+                               })
+
+        elif event.event_type == "created":
+            f_data = None
+            f_type = None
+            if not event.is_directory:
+                f_data = self.encrypt(event.src_path)
+                f_type = "file"
+            else:
+                f_type = "dir"
+
+            data = json.dumps({"payload" : f_data,
+                               "t" : f_type
+                               })
+
+        elif event.event_type == "deleted":
+            f_data = None
+            f_type = None
+            if not event.is_directory:
+                f_type = "file"
+            else:
+                f_type = "dir"
+
+            data = json.dumps({"payload" : event.src_path,
+                               "t" : f_type,
+                               "event" : "delete"
+                               })
+            self.connection.post(self.url+"/api/"+event_thing,
+                                 data=data,
+                                 headers=headers)
+            return
+
+
+        elif event.event_type == "modified":
+            f_data = None
+            f_type = None
+            if not event.is_directory:
+                f_data = self.encrypt(event.src_path)
+                f_type = "file"
+            else:
+                return
+
+            data = json.dumps({"payload" : f_data,
+                               "t" : f_type
+                               })
+
+
+        self.connection.post(self.url+"/api/"+event_thing+event.src_path,
+                             data=data,
                              headers=headers)
-        f.close()
 
 
 
-    def encypt(self):
-        pass
+
+    def encrypt(self, path):
+        with open(path, 'r') as f:
+            return f.read()
+
