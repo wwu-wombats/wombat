@@ -59,8 +59,10 @@ def api_create(filename):
     path, name = os.path.split(user_path)
 
     data = json.loads(request.body.read())
-    event = data[u't']
-    
+    event = 'file'
+    if u't' in data:
+        event = data[u't']
+
     if event == 'dir':
         if not os.path.isdir(path):
             os.makedirs(path)
@@ -163,9 +165,9 @@ def list_dir(root):
             dir.append(it)
     else:
         return {}
-    
+
     return dir
-               
+
 
 ### Webpage items ###
 ### add webpages here and stuff ###
