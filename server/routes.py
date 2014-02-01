@@ -117,6 +117,13 @@ def login_form():
     """Serve login form"""
     return {}
 
+@bottle.route('/js/<filename>')
+def static_js(filename):
+    return static_file(filename, 'js')
+
+@bottle.route('/js/libs/<filename>')
+def static_js(filename):
+    return static_file(filename, 'js/libs')
 
 @bottle.route('/sorry_page')
 def sorry_page():
