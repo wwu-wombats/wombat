@@ -137,7 +137,6 @@ def login():
     """Authenticate users"""
     username = post_get('username')
     password = post_get('password')
-    print (bottle.request.body.read(), username, password)
     aaa.login(username, password, success_redirect='/', fail_redirect='/login')
 
 @bottle.route('/user_is_anonymous')
