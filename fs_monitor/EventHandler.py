@@ -5,13 +5,9 @@ from watchdog.events import FileSystemEventHandler
 
 
 class EventHandler(FileSystemEventHandler):
-    def __init__(self):
-        # Some possible args will be a connection the sqlite database,
-        # opening http connection (sockets?) for syncing.
-        # Check in with the server for and changes (deletes, sync files, etc.)
-        self.host = 'localhost'
-        self.port = 9999
-        self.conn = http.client.HTTPConnection(self.host, self.port)
+    def __init__(self, http_connection):
+        # Persistent http connection
+        self.connection = http_connection
 
 
     def on_any_event(self, event):
@@ -19,11 +15,6 @@ class EventHandler(FileSystemEventHandler):
         On any event we want to possibly do logging. Anything else?
         """
         print(event)
-
-
-
-
-
 #        headers = {"Contet-type" : "text/plain"}
 #        self.conn.request("POST", '/', "this is data", headers)
 #        response = self.conn.getresponse()
@@ -44,7 +35,9 @@ class EventHandler(FileSystemEventHandler):
         """
         On a create event we should just have to sync file to the server.
         """
-        pass
+        print("File created: ",event.src_path)
+
+
 
     def on_deleted(self, event):
         """
