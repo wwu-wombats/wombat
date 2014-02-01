@@ -3,6 +3,7 @@
         <title>Webfs</title>
         <script src="libs/jquery-2.1.0.min.js"></script>
         <script src="libs/aes.js"></script>
+        <script src="libs/underscore-min.js"></script>
         <script src="webfs.js"></script>
     </head>
     <body onload="init();">
@@ -88,8 +89,9 @@
         };
         //importScripts("libs/aes.js");
         self.onmessage = function(e) {
-            var encrypted = CryptoJS.AES.encrypt(e.data, "secretkey", { format: JsonFormatter });
-            var data = JSON.stringify({title: 'title', payload: encrypted + ""});
+            var recv = JSON.parse(e.data);
+            var encrypted = CryptoJS.AES.encrypt(recv.payload, "secretkey", { format: JsonFormatter });
+            var data = JSON.stringify({title: recv.title, part: recv.part, payload: JSON.parse(encrypted.toString())});
             self.postMessage(data);
         }
     </script>
