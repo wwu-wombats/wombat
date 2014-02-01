@@ -4,7 +4,7 @@ Get the status of the API
 
 ::returns: { status: 'code', time: 'timestamp' }
 
-/api/upload
+/api/create
 ===========
 Post data to this route to upload a file
 
@@ -15,6 +15,10 @@ Post two paths to this route to mave a to b
 /api/delete
 ===========
 Post a path to the server for deletion
+
+/api/modify
+===========
+Post a modified file, remove old.
 
 /api/download/<file>
 ====================
