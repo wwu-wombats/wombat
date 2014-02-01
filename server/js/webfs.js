@@ -35,7 +35,7 @@ $(function() {
                 loadDir();
             });
             $('#list li.item.file').click(function(e) {
-                downloadFile(getHash() + $.trim($(this).text()));
+                downloadFile(getHash() + '/' + $.trim($(this).text()), $.trim($(this).text()));
             });
             $('#list li.item.up').click(function(e) {
                 path = window.location.hash.split('/');
@@ -71,22 +71,29 @@ $(function() {
                     filesize = f.size,
                     filedate = f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
                     progressevents = 0,
-                    numprogresses = 0,
-                    encryptedPayload = [];
+                    numprogresses = 0;
+                //var encryptedPayload = new Array();
+                var encryptedPayload = "";
                 console.log("processing " + filename);
+                console.log(encryptedPayload);
                 encryptWorker.onmessage = function(e) {
+                    console.log(e);
+                    console.log(filename);
+                    console.log(encryptedPayload);
                     var data = JSON.parse(e.data);
                     // we need to make sure we don't write this out of order.
-                    encryptedPayload.push(data);
+                    //encryptedPayload.push(data);
+                    encryptedPayload += data.payload;
                     if (numprogresses > 0) {
-                        console.log(encryptedPayload);
-                        var payload = ""
+                        /*console.log(encryptedPayload);
+                        var payload = "",
                             encryptedPayload = _.sortBy(encryptedPayload, function(peice) {
                                 return peice.part;
                             });
                         _.each(encryptedPayload, function(peice) {
                             payload += peice.payload.ct;
-                        });
+                        });*/
+                        var payload = encryptedPayload;
                         var sendrequest = $.ajax({
                             type: 'post',
                             url: "/api/create/" + filename,
@@ -111,16 +118,12 @@ $(function() {
                 }
                 console.log(f);
                 reader.onload = function(e) {
-                    console.log("loaded file");
-                    console.log(e);
+                    console.log("Loaded all of " + filename);
                     numprogresses = progressevents;
                 };
                 reader.onprogress = (function(filepart) {
                     return function(e) {
                         progressevents++;
-                        console.log(progressevents + ' progress events have happened.');
-                        console.log(e);
-                        console.log(reader);
                         var text = reader.result;
                         var message = JSON.stringify({
                             part: progressevents,
@@ -139,16 +142,39 @@ $(function() {
             })()
         }
     }
-    function downloadFile(filepath) {
+    function downloadFile(filepath, filename) {
         console.log(filepath);
         $.get("/api/download/" + filepath, function(data) {
             var decryptWorker = new Worker(window.URL.createObjectURL(decryptWorkerBlob));
             decryptWorker.onmessage = function(e) {
-                var recv = e.data;
+                var recv = JSON.parse(e.data);
                 console.log(recv);
+
+                var file = new Blob([recv.payload], {
+                    name: filename,
+                    type: "image/png"
+                });
+                window.open(window.URL.createObjectURL(file));
+
+                /*window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
+
+                window.requestFileSystem(window.TEMPORARY, 1024*1024, function(fs) {
+                    fs.root.getFile(filename, {create: true}, function(fileEntry) {
+                        fileEntry.createWriter(function(fileWriter) {
+                            var blob = new Blob([recv.payload]);
+
+                            fileWriter.addEventListener("writeend", function() {
+                                // navigate to file, will download
+                                //location.href = fileEntry.toURL();
+                            }, false);
+
+                            fileWriter.write(blob);
+                        }, function() {});
+                    }, function() {});
+                }, function() {});*/
             }
             decryptWorker.postMessage(JSON.stringify({
-                payload: data,
+                payload: data.payload,
                 secretkey: SECRETKEY
             }));
         });
