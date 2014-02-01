@@ -100,11 +100,14 @@ def api_list(directory = None):
 
 @bottle.route('/')
 @authorize()
+@bottle.view('index')
 def index():
     """Only authenticated users can see this"""
     #session = bottle.request.environ.get('beaker.session')
     #aaa.require(fail_redirect='/login')
-    return 'Welcome! <a href="/admin">Admin page</a> <a href="/logout">Logout</a>'
+    return dict(
+        current_user = aaa.current_user,
+    )
 
 # Static pages
 
