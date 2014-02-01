@@ -56,7 +56,7 @@ def api_create(filename):
     if not os.path.isdir(user_path):
         os.mkdir(user_path)
 
-    payload = request.json['payload']
+    payload = bottle.request.json['payload']
     print("Uploaded: " + filename)
     with open(os.path.join(os.path.abspath(FILE_ROOT), user, filename), "w") as f:
         f.write(payload.encode('ascii'))
@@ -147,7 +147,6 @@ def login():
     """Authenticate users"""
     username = post_get('username')
     password = post_get('password')
-    print (bottle.request.body.read(), username, password)
     aaa.login(username, password, success_redirect='/', fail_redirect='/login')
 
 @bottle.route('/user_is_anonymous')
