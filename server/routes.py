@@ -41,7 +41,7 @@ session_opts = {
 app = SessionMiddleware(app, session_opts)
 
 ### API FUNCTIONS ###
-FILE_ROOT = "/home/littlec8/wombat/server/tmp"
+FILE_ROOT = "/home/littlec8/wombat/server/files"
 
 @bottle.route('/api')
 @bottle.route('/api/')
