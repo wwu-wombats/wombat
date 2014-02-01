@@ -19,7 +19,7 @@ function handleFileSelect(evt) {
                 f.size, ' bytes, last modified: ',
                 f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
                 '</li>');
-    var encryptWorkerBlob = new Blob([document.querySelector('#encryptjs').textContent]);
+    var encryptWorkerBlob = new Blob([document.querySelector('#encryptworker').textContent]);
     var reader = new FileReader(),
         encryptWorker = new Worker(window.URL.createObjectURL(encryptWorkerBlob)),
         filename = f.name;
@@ -51,8 +51,23 @@ function handleFileSelect(evt) {
         };
     })();*/
     reader.onprogress = (function(filepart) {
-        encryptWorker.postMessage("testing");
-    });
+        return function (e) {
+            console.log(e);
+            console.log(reader);
+            var text = reader.result;
+            encryptWorker.postMessage(text);
+            /*request = $.ajax({
+                url: "/upload",
+                type: "post",
+                data: data,
+                contentType: 'application/json',
+                dataType: 'json',
+            });
+            request.done(function(response, textStatus, jqXHR){
+                console.log("Done.");
+            });*/
+        };
+    })();
     reader.readAsText(f);
   }
   document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
