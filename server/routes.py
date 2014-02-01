@@ -40,7 +40,7 @@ session_opts = {
 app = SessionMiddleware(app, session_opts)
 
 ### API FUNCTIONS ###
-FILE_ROOT = "/home/foxk5/wombat/server/tmp"
+FILE_ROOT = "/home/littlec8/wombat/server/tmp"
 
 @bottle.route('/api')
 @bottle.route('/api/')
@@ -56,7 +56,7 @@ def api_create(filename):
     if not os.path.isdir(user_path):
         os.mkdir(user_path)
 
-    payload = bottle.request.json['payload']
+    payload = request.json['payload']
     print("Uploaded: " + filename)
     with open(os.path.join(os.path.abspath(FILE_ROOT), user, filename), "w") as f:
         f.write(payload.encode('ascii'))

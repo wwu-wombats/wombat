@@ -33,7 +33,7 @@ $(function() {
                     _.each(encryptedPayload, function(peice) {
                         payload += peice.payload.ct;
                     });
-                    $.post("http://67.201.205.18:8080/api/create/" + filename, {
+                    $.post("/api/create/" + filename, {
                         payload: payload
                     }).done(function(e) {
                         console.log("done");
