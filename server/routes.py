@@ -51,14 +51,16 @@ def api_status():
 @authorize()
 def api_create(filename):
     user = aaa.current_user.username
-    user_path = os.path.join(os.path.abspath(FILE_ROOT), user)
+    user_path = os.path.join(os.path.abspath(FILE_ROOT), user, filename.strip('/'))
+    path, name = os.path.split(user_path)
 
-    if not os.path.isdir(user_path):
-        os.mkdir(user_path)
+    if not os.path.isdir(path):
+        os.makedirs(path)
 
+    print(bottle.request.body.read())
     payload = bottle.request.json['payload']
     print("Uploaded: " + filename)
-    with open(os.path.join(os.path.abspath(FILE_ROOT), user, filename), "w") as f:
+    with open(user_path, "w") as f:
         f.write(payload.encode('ascii'))
 
 @bottle.route('/api/delete/<filename:path>')
@@ -72,7 +74,7 @@ def api_delete(filename):
 @authorize()
 def api_download(filename):
     user = aaa.current_user.username
-    path = os.path.join(os.path.abspath(FILE_ROOT), user, filename)
+    path = os.path.join(os.path.abspath(FILE_ROOT), user, filename.strip('/'))
     print ("Sending: " + filename)
     root, name = os.path.split(path)
     return static_file(name, root)
