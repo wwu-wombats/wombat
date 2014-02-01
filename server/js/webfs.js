@@ -8,6 +8,7 @@ $(function() {
 
     function handleFileSelect(evt) {
         var files = evt.target.files; // FileList object
+        var $outputlist = $('#list ul');
 
         // files is a FileList of File objects. List some properties.
         var output = [];
@@ -17,6 +18,9 @@ $(function() {
             var reader = new FileReader(),
                 encryptWorker = new Worker(window.URL.createObjectURL(encryptWorkerBlob)),
                 filename = f.name,
+                filetype = f.type,
+                filesize = f.size,
+                filedate = f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
                 progressevents = 0,
                 numprogresses = 0,
                 encryptedPayload = [];
@@ -33,32 +37,25 @@ $(function() {
                     _.each(encryptedPayload, function(peice) {
                         payload += peice.payload.ct;
                     });
-                    $.post("/api/create/" + filename, {
-                        payload: payload
-                    }).done(function(e) {
+                    var sendrequest = $.ajax({
+                        type: 'post',
+                        url: "/api/create/" + filename,
+                        dataType: 'json',
+                        contentType: 'application/json',
+                        data: JSON.stringify({payload: payload}),
+                    });
+                    sendrequest.always(function(e) {
                         console.log("done");
                         console.log(e);
-                    }).fail(function(e, d) {
-                        console.log("Failed");
-                        console.log(e);
-                        console.log(e);
-                    }).always(function(e) {
-                        console.log("totally done");
-                        console.log(e);
-                    });
-                    request = $.ajax({
-                        url: "",
-                            type: "post",
-                            data: { payload: payload },
-                            contentType: 'application/json',
-                            dataType: 'json',
-                    });
-                    request.done(function(response, textStatus, jqXHR){
-                        console.log(response);
-                        output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
-                            f.size, ' bytes, last modified: ',
-                            f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
-                            '</li>');
+                        if (e.status == 200) {
+                            $outputlist.append([
+                                '<li><strong>', escape(filename), '</strong> (',
+                                filetype || 'n/a', ') - ', filesize,
+                                ' bytes, last modified: ', filedate, '</li>'
+                            ].join(''));
+                        } else {
+                            alert("File upload failed!")
+                        }
                     });
                 }
             }
@@ -125,6 +122,5 @@ $(function() {
             })();
             reader.readAsText(f);
         }
-        document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
     }
 });
