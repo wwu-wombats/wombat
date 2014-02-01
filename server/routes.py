@@ -148,7 +148,7 @@ def api_list(directory = None):
 @route('/api/tree/')
 @authorize()
 def api_tree():
-    items = { 'items': list_dir(os.path.abspath(FILE_ROOT))}
+    items = { 'name': "", 't': 'dir', 'items': list_dir(os.path.abspath(FILE_ROOT))}
     return items
 
 def list_dir(root):
