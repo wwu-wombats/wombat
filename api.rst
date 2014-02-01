@@ -1,4 +1,4 @@
-/api 
+/api
 ====
 Get the status of the API
 
@@ -7,6 +7,14 @@ Get the status of the API
 /api/upload
 ===========
 Post data to this route to upload a file
+
+/api/move
+=========
+Post two paths to this route to mave a to b
+
+/api/delete
+===========
+Post a path to the server for deletion
 
 /api/download/<file>
 ====================
@@ -20,4 +28,3 @@ it can have some number of path segments infront eg. /api/download/test/test.txt
 Directory: a subdirectory that you want the contents of
 
 ::returns: json array of the form { items: ['1', '2', ...] }
-
