@@ -27,8 +27,10 @@ if __name__ == '__main__':
                  data=("username="+user+"&"+"password="+pwd)
                  )
 
-    r = session.get(url+"/api/list")
+    r = session.get(url+"/api/tree")
     print(r.text)
+#    print(json.dumps(eval(r.text), sort_keys=True,
+#          indent=4, separators=(',',':')))
 
 
 

@@ -71,6 +71,11 @@ class EventHandler(FileSystemEventHandler):
                                "src" : event.src_path,
                                "dest" : event.dest_path
                                })
+            self.connection.post(self.url+"/api/"+event_thing,
+                                 data=data,
+                                 headers=headers)
+            return
+
 
         elif event.event_type == "created":
             f_data = None
