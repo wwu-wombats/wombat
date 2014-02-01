@@ -114,7 +114,7 @@ def api_download(filename):
     path = os.path.join(os.path.abspath(FILE_ROOT), user, filename.strip('/'))
     print ("Sending: " + filename)
     root, name = os.path.split(path)
-    return {'payload':static_file(name, root)}
+    return {'payload': open(path, 'r').read()}
 
 @route('/api/list')
 @route('/api/list/')
