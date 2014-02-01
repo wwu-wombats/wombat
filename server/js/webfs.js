@@ -28,19 +28,27 @@ $(function() {
     function loadDir() {
         // list files
         $.get("/api/list/" + getHash(), function(data) {
-            $('#list').html(Templates.list(_.extend(data, { path: getHash() })));
-            $('#list li.item.dir').click(function(e) {
+            $('#list').html(Templates.list(_.extend(data, {
+                path: getHash()
+            })));
+            $('#list .item .delete').click(function(e) {
+                pathname = $.trim($(this).closest('.item').find('.name').text());
+                deleteItem(getHash() + '/' + pathname, pathname);
+            });
+            $('#list .item.dir').click(function(e) {
                 paths = getHash().split('/');
-                paths.push($.trim($(this).text()));
+                paths.push($.trim($(this).closest('.item').find('.name').text()));
                 paths = _.without(paths, "", "#", undefined);
                 console.log(paths.join('/'));
                 window.location.hash = '/' + paths.join('/');
                 loadDir();
             });
-            $('#list li.item.file').click(function(e) {
-                downloadFile(getHash() + '/' + $.trim($(this).text()), $.trim($(this).text()));
+            $('#list .item.file .download').click(function(e) {
+                console.log($(this).closest('.item').find('.name').text());
+                pathname = $.trim($(this).closest('.item').find('.name').text());
+                downloadFile(getHash() + '/' + pathname, pathname);
             });
-            $('#list li.item.up').click(function(e) {
+            $('#list .item.up').click(function(e) {
                 path = window.location.hash.split('/');
                 console.log(path);
                 path.pop();
@@ -201,5 +209,8 @@ $(function() {
                 secretkey: SECRETKEY
             }));
         });
+    }
+    function deleteItem(path) {
+        console.log(path);
     }
 });
