@@ -14,7 +14,7 @@ if __name__ == '__main__':
     paths = [ x for x in sys.argv[1:] ] or '.'
     print("The paths to be monitored are: ", paths)
 
-    host = '67.201.205.18'
+    host = '140.160.107.111'
     port = '8080'
 
     url = "http://"+host+":"+port
