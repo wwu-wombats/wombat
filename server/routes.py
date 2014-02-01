@@ -16,6 +16,7 @@ import logging
 import time
 from datetime import datetime
 import os
+import json
 
 logging.basicConfig(format='localhost - - [%(asctime)s] %(message)s', level=logging.DEBUG)
 log = logging.getLogger(__name__)
@@ -57,8 +58,8 @@ def api_create(filename):
     if not os.path.isdir(path):
         os.makedirs(path)
 
-    print(bottle.request.body.read())
-    payload = bottle.request.json['payload']
+    data = json.loads(bottle.request.body.read())
+    payload = data[u'payload']
     print("Uploaded: " + filename)
     with open(user_path, "w") as f:
         f.write(payload.encode('ascii'))
