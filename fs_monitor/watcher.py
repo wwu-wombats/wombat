@@ -15,14 +15,16 @@ if __name__ == '__main__':
     print("The paths to be monitored are: ", paths)
 
     host = '67.201.205.18'
-    port = 8080
+    port = '8080'
 
-    url = "http://"+host+":"+str(port)
+    url = "http://"+host+":"+port
 
     session = requests.Session()
 
-    session.post(url+"/login", data=json.dumps({"username" : "test",
-                                                "password" : "test"})
+    user = 'test'
+    pwd = 'test'
+    session.post(url+"/login",
+                 data=("username="+user+"&"+"password="+pwd)
                  )
 
     r = session.get(url+"/api/list")
@@ -30,7 +32,7 @@ if __name__ == '__main__':
 
 
 
-    event_handler = EventHandler(session)
+    event_handler = EventHandler(session, url)
     to_watch = Observer()
 
 
@@ -45,4 +47,4 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         to_watch.stop()
     to_watch.join()
-    connection.close()
+
