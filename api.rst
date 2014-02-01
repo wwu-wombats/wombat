@@ -12,6 +12,7 @@ Post data to this route to upload a file
 /api/move
 =========
 Post two paths to this route to mave a to b
+Post json {'src':'sourcepath', 'dst': 'destpath' }
 
 /api/delete/<file>
 ==================
@@ -43,5 +44,28 @@ Directory: a subdirectory that you want the contents of
         }, {
             name: "dirname"
             t: "dir"
+        }]
+    }
+
+/api/tree
+=========
+
+::returns: json object of the form 
+
+.. code::
+
+    {
+        items: [{
+            name: "filename",
+            t: "file",
+            items: "",
+        }, {
+            name: "dirname",
+            t: "dir",
+            items: [{
+                 name: "filename",
+                 t: "file",
+                 items: "",
+            }]
         }]
     }
