@@ -86,15 +86,23 @@ def api_download(filename):
 @authorize()
 def api_list(directory = None):
     user = aaa.current_user.username
+    items = []
+
     if directory:
         root = os.path.join(os.path.abspath(FILE_ROOT), user, directory.strip('/'))
     else:
         root = os.path.join(os.path.abspath(FILE_ROOT), user)
+        if not os.path.isdir(root):
+            os.makedirs(root)
 
-    if not os.path.isdir(root):
-        os.makedirs(root)
-
-    items = os.listdir(root)
+    for item in os.listdir(root):
+        path = os.path.join(root, item)
+        it = { 't': '', 'name': str(item) }
+        if os.path.isdir(path):
+            it['t'] = 'dir'
+        elif os.path.isfile(path):
+            it['t'] = 'file'
+        items.append(it);
 
     return  { 'items': items }
 

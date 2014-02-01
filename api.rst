@@ -32,4 +32,16 @@ it can have some number of path segments infront eg. /api/download/test/test.txt
 =======================
 Directory: a subdirectory that you want the contents of
 
-::returns: json array of the form { items: ['1', '2', ...] }
+::returns: json object of the form
+
+.. code::
+
+    {
+        items: [{
+            name: "filename",
+            t: "file"
+        }, {
+            name: "dirname"
+            t: "dir"
+        }]
+    }
