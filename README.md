@@ -1,4 +1,6 @@
 Wombat
+======
 
 A web based file storage system
-lalalal
+
+![ScreenShot](https://raw2.github.com/apexskier/wombat/master/media/wombat.gif)
