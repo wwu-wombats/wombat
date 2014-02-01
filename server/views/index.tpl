@@ -1,5 +1,7 @@
+<!doctype html>
 <html>
 <head>
+    <meta charset='utf-8'>
     <title>Webfs</title>
 </head>
 <body>
@@ -9,12 +11,27 @@
     <h2>Welcome to Wombat</h2>
     <p>Welcome {{current_user.username}}, your role is: {{current_user.role}}</p>
 
+    <ul id="list">
+
+    </ul>
+
     <input type="file" id="files" name="files[]" multiple>
-    <output id="list"><ul></ul></output>
+    <output id="uploaded"><ul></ul></output>
 
     <script src="/js/libs/jquery-2.1.0.min.js"></script>
     <script src="/js/libs/aes.js"></script>
     <script src="/js/libs/underscore-min.js"></script>
+
+    <script id="template-list" type="javascript/template">
+        <% _.each(items, function(item) { %>
+            <li class="item"><%= item %></li>
+        <% }); %>
+    </script>
+    <script id="templates">
+        window.Templates = {};
+        Templates.list = _.template(document.querySelector('#template-list').textContent);
+    </script>
+
     <script src="/js/webfs.js"></script>
 
     <script id="encryptworker" type="javascript/worker">
