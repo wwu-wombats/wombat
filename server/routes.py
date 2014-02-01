@@ -9,9 +9,13 @@
 #  admin/admin, demo/demo
 
 import bottle
+from bottle import static_file
 from beaker.middleware import SessionMiddleware
 from cork import Cork
 import logging
+import time
+from datetime import datetime
+import os
 
 logging.basicConfig(format='localhost - - [%(asctime)s] %(message)s', level=logging.DEBUG)
 log = logging.getLogger(__name__)
@@ -112,34 +116,34 @@ def index():
     return 'Welcome! <a href="/admin">Admin page</a> <a href="/logout">Logout</a>'
 
 
-# Resources used by tests designed to test decorators specifically
-
-@bottle.route('/for_kings_only')
-@authorize(role="king")
-def page_for_kings():
-    """
-    This resource is used to test a non-existing role.
-    Only kings or higher (e.g. gods) can see this
-    """
-    return 'Welcome! <a href="/admin">Admin page</a> <a href="/logout">Logout</a>'
-
-@bottle.route('/page_for_specific_user_admin')
-@authorize(username="admin")
-def page_for_username_admin():
-    """Only a user named 'admin' can see this"""
-    return 'Welcome! <a href="/admin">Admin page</a> <a href="/logout">Logout</a>'
-
-@bottle.route('/page_for_specific_user_fred_who_doesnt_exist')
-@authorize(username="fred")
-def page_for_user_fred():
-    """Only authenticated users by the name of 'fred' can see this"""
-    return 'Welcome! <a href="/admin">Admin page</a> <a href="/logout">Logout</a>'
-
-@bottle.route('/page_for_admins')
-@authorize(role="admin")
-def page_for_role_admin():
-    """Only authenticated users (role=user or role=admin) can see this"""
-    return 'Welcome! <a href="/admin">Admin page</a> <a href="/logout">Logout</a>'
+## Resources used by tests designed to test decorators specifically
+#
+#@bottle.route('/for_kings_only')
+#@authorize(role="king")
+#def page_for_kings():
+#    """
+#    This resource is used to test a non-existing role.
+#    Only kings or higher (e.g. gods) can see this
+#    """
+#    return 'Welcome! <a href="/admin">Admin page</a> <a href="/logout">Logout</a>'
+#
+#@bottle.route('/page_for_specific_user_admin')
+#@authorize(username="admin")
+#def page_for_username_admin():
+#    """Only a user named 'admin' can see this"""
+#    return 'Welcome! <a href="/admin">Admin page</a> <a href="/logout">Logout</a>'
+#
+#@bottle.route('/page_for_specific_user_fred_who_doesnt_exist')
+#@authorize(username="fred")
+#def page_for_user_fred():
+#    """Only authenticated users by the name of 'fred' can see this"""
+#    return 'Welcome! <a href="/admin">Admin page</a> <a href="/logout">Logout</a>'
+#
+#@bottle.route('/page_for_admins')
+#@authorize(role="admin")
+#def page_for_role_admin():
+#    """Only authenticated users (role=user or role=admin) can see this"""
+#    return 'Welcome! <a href="/admin">Admin page</a> <a href="/logout">Logout</a>'
 
 
 
@@ -150,6 +154,53 @@ def restricted_download():
     #aaa.require(fail_redirect='/login')
     return bottle.static_file('static_file', root='.')
 
+### API FUNCTIONS ###
+FILE_ROOT = "/home/foxk5/wombat/server/tmp"
+
+@bottle.route('/api')
+@bottle.route('/api/')
+def api_status():
+    return { 'status': 'online', 'time': datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')}
+
+@bottle.route('/api/create/<filename:path>')
+@authorize()
+def api_create(filename):
+    user = aaa.current_user.username
+    payload = request.json['payload']
+    print("Uploaded: " + filename)
+    with open(os.path.join(FILE_ROOT, user, filename), "w") as f:
+        f.write(payload.encode('ascii'))
+
+@bottle.route('/api/delete/<filename:path>')
+@authorize()
+def api_delete(filename):
+    user = aaa.current_user.username
+    path = os.path.join(os.path.abspath(FILE_ROOT), user, filename)
+    os.remove(path)
+
+@bottle.route('/api/download/<filename:path>')
+@authorize()
+def api_download(filename):
+    user = aaa.current_user.username
+    path = os.path.join(os.path.abspath(FILE_ROOT), user, filename)
+    print ("Sending: " + filename)
+    root, name = os.path.split(path)
+    return static_file(name, root)
+
+@bottle.route('/api/list')
+@bottle.route('/api/list/')
+@bottle.route('/api/list/<directory:path>')
+@authorize()
+def api_list(directory = None):
+    user = aaa.current_user.username
+    if directory:
+        root = os.path.join(os.path.abspath(FILE_ROOT), user, directory)
+    else:
+        root = os.path.join(os.path.abspath(FILE_ROOT), user)
+
+    items = os.listdir(root)
+
+    return  { 'items': items }
 
 @bottle.route('/my_role')
 def show_current_user_role():
