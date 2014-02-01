@@ -22,8 +22,10 @@ logging.basicConfig(format='localhost - - [%(asctime)s] %(message)s', level=logg
 log = logging.getLogger(__name__)
 bottle.debug(True)
 
+#smtp_server = smtplib.SMTP('localhost')
+
 # Use users.json and roles.json in the local example_conf directory
-aaa = Cork('wombat_conf')
+aaa = Cork('wombat_conf', email_sender='wombat@example.com', smtp_url='localhost')
 
 # alias the authorization decorator with defaults
 authorize = aaa.make_auth_decorator(fail_redirect="/login", role="user")
@@ -63,6 +65,23 @@ def api_create(filename):
     print("Uploaded: " + filename)
     with open(user_path, "w") as f:
         f.write(payload.encode('ascii'))
+
+@post('/api/move')
+@post('/api/move/')
+@authorize()
+def api_move():
+    user = aaa.current_user.username
+    user_path = os.path.join(os.path.abspath(FILE_ROOT), user)
+    data = json.loads(request.body.read())
+
+    src = data[u'src']
+    dst = data[u'dst']
+
+    src_path = os.path.join(user_path, src.strip('/'))
+    dst_path = os.path.join(user_path, dst.strpi('/'))
+
+    if os.path.exists(src_path):
+        os.rename(src_path, dst_path)
 
 @route('/api/delete/<filename:path>')
 @authorize()
@@ -105,6 +124,31 @@ def api_list(directory = None):
         items.append(it);
 
     return  { 'items': items }
+
+@route('/api/tree')
+@route('/api/tree/')
+@authorize()
+def api_tree():
+    items = { 'items': list_dir(os.path.abspath(FILE_ROOT))}
+    return items
+
+def list_dir(root):
+    dir = []
+    if os.path.isdir(root):
+        for entry in os.listdir(root):
+            path = os.path.join(root, entry)
+            it = {'name': str(entry), 't':'', 'items':'' }
+            if os.path.isdir(path):
+                 it['t'] = 'dir'
+                 it['items'] = list_dir(path)
+            elif os.path.isfile(path):
+                 it['t'] = 'file'
+            dir.append(it)
+    else:
+        return {}
+    
+    return dir
+               
 
 ### Webpage items ###
 ### add webpages here and stuff ###
@@ -279,6 +323,7 @@ def main():
     # Start the Bottle webapp
     bottle.debug(True)
     bottle.run(host="0.0.0.0", app=app, quiet=False, reloader=True)
+    #smtp_server.quit()
 
 if __name__ == "__main__":
     main()
