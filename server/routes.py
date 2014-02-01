@@ -57,14 +57,25 @@ def api_create(filename):
     user_path = os.path.join(os.path.abspath(FILE_ROOT), user, filename.strip('/'))
     path, name = os.path.split(user_path)
 
-    if not os.path.isdir(path):
-        os.makedirs(path)
-
     data = json.loads(request.body.read())
-    payload = data[u'payload']
-    print("Uploaded: " + filename)
-    with open(user_path, "w") as f:
-        f.write(payload.encode('ascii'))
+    event = data[u't']
+    
+    if event == 'dir':
+        if not os.path.isdir(path):
+            os.makedirs(path)
+            return
+        else:
+            return
+    else:
+
+        if not os.path.isdir(path):
+            os.makedirs(path)
+
+        payload = data[u'payload']
+
+        print("Uploaded: " + filename)
+        with open(user_path, "w") as f:
+            f.write(payload.encode('ascii'))
 
 @post('/api/move')
 @post('/api/move/')
