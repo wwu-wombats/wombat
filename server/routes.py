@@ -31,13 +31,94 @@ import datetime
 app = bottle.app()
 session_opts = {
     'session.cookie_expires': True,
-    'session.encrypt_key': 'please use a random key and keep it secret!',
+    'session.encrypt_key': 'THIS IS THE MOST SECRET KEY OF ANY THAT EVER WERE DAMMIT!!!!',
     'session.httponly': True,
     'session.timeout': 3600 * 24,  # 1 day
     'session.type': 'cookie',
     'session.validate_key': True,
 }
 app = SessionMiddleware(app, session_opts)
+
+### API FUNCTIONS ###
+FILE_ROOT = "/home/foxk5/wombat/server/tmp"
+
+@bottle.route('/api')
+@bottle.route('/api/')
+def api_status():
+    return { 'status': 'online', 'time': datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')}
+
+@bottle.post('/api/create/<filename:path>')
+@authorize()
+def api_create(filename):
+    user = aaa.current_user.username
+    user_path = os.path.join(os.path.abspath(FILE_ROOT), user)
+
+    if not os.path.isdir(user_path):
+        os.mkdir(user_path)
+
+    payload = request.json['payload']
+    print("Uploaded: " + filename)
+    with open(os.path.join(os.path.abspath(FILE_ROOT), user, filename), "w") as f:
+        f.write(payload.encode('ascii'))
+
+@bottle.route('/api/delete/<filename:path>')
+@authorize()
+def api_delete(filename):
+    user = aaa.current_user.username
+    path = os.path.join(os.path.abspath(FILE_ROOT), user, filename)
+    os.remove(path)
+
+@bottle.route('/api/download/<filename:path>')
+@authorize()
+def api_download(filename):
+    user = aaa.current_user.username
+    path = os.path.join(os.path.abspath(FILE_ROOT), user, filename)
+    print ("Sending: " + filename)
+    root, name = os.path.split(path)
+    return static_file(name, root)
+
+@bottle.route('/api/list')
+@bottle.route('/api/list/')
+@bottle.route('/api/list/<directory:path>')
+@authorize()
+def api_list(directory = None):
+    user = aaa.current_user.username
+    if directory:
+        root = os.path.join(os.path.abspath(FILE_ROOT), user, directory)
+    else:
+        root = os.path.join(os.path.abspath(FILE_ROOT), user)
+
+    if not os.path.isdir(root):
+        os.mkdir(root)
+
+    items = os.listdir(root)
+
+    return  { 'items': items }
+
+### Webpage items ###
+### add webpages here and stuff ###
+
+@bottle.route('/')
+@authorize()
+def index():
+    """Only authenticated users can see this"""
+    #session = bottle.request.environ.get('beaker.session')
+    #aaa.require(fail_redirect='/login')
+    return 'Welcome! <a href="/admin">Admin page</a> <a href="/logout">Logout</a>'
+
+# Static pages
+
+@bottle.route('/login')
+@bottle.view('login_form')
+def login_form():
+    """Serve login form"""
+    return {}
+
+
+@bottle.route('/sorry_page')
+def sorry_page():
+    """Serve sorry page"""
+    return '<p>Sorry, you are not authorized to perform this action</p>'
 
 
 # #  Bottle methods  # #
@@ -49,12 +130,14 @@ def postd():
 def post_get(name, default=''):
     return bottle.request.POST.get(name, default).strip()
 
+### AUTHENTICATION METHODS ###
 
 @bottle.post('/login')
 def login():
     """Authenticate users"""
     username = post_get('username')
     password = post_get('password')
+    print (bottle.request.body.read(), username, password)
     aaa.login(username, password, success_redirect='/', fail_redirect='/login')
 
 @bottle.route('/user_is_anonymous')
@@ -106,102 +189,6 @@ def change_password():
     aaa.reset_password(post_get('reset_code'), post_get('password'))
     return 'Thanks. <a href="/login">Go to login</a>'
 
-
-@bottle.route('/')
-@authorize()
-def index():
-    """Only authenticated users can see this"""
-    #session = bottle.request.environ.get('beaker.session')
-    #aaa.require(fail_redirect='/login')
-    return 'Welcome! <a href="/admin">Admin page</a> <a href="/logout">Logout</a>'
-
-
-## Resources used by tests designed to test decorators specifically
-#
-#@bottle.route('/for_kings_only')
-#@authorize(role="king")
-#def page_for_kings():
-#    """
-#    This resource is used to test a non-existing role.
-#    Only kings or higher (e.g. gods) can see this
-#    """
-#    return 'Welcome! <a href="/admin">Admin page</a> <a href="/logout">Logout</a>'
-#
-#@bottle.route('/page_for_specific_user_admin')
-#@authorize(username="admin")
-#def page_for_username_admin():
-#    """Only a user named 'admin' can see this"""
-#    return 'Welcome! <a href="/admin">Admin page</a> <a href="/logout">Logout</a>'
-#
-#@bottle.route('/page_for_specific_user_fred_who_doesnt_exist')
-#@authorize(username="fred")
-#def page_for_user_fred():
-#    """Only authenticated users by the name of 'fred' can see this"""
-#    return 'Welcome! <a href="/admin">Admin page</a> <a href="/logout">Logout</a>'
-#
-#@bottle.route('/page_for_admins')
-#@authorize(role="admin")
-#def page_for_role_admin():
-#    """Only authenticated users (role=user or role=admin) can see this"""
-#    return 'Welcome! <a href="/admin">Admin page</a> <a href="/logout">Logout</a>'
-
-
-
-@bottle.route('/restricted_download')
-@authorize()
-def restricted_download():
-    """Only authenticated users can download this file"""
-    #aaa.require(fail_redirect='/login')
-    return bottle.static_file('static_file', root='.')
-
-### API FUNCTIONS ###
-FILE_ROOT = "/home/foxk5/wombat/server/tmp"
-
-@bottle.route('/api')
-@bottle.route('/api/')
-def api_status():
-    return { 'status': 'online', 'time': datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')}
-
-@bottle.route('/api/create/<filename:path>')
-@authorize()
-def api_create(filename):
-    user = aaa.current_user.username
-    payload = request.json['payload']
-    print("Uploaded: " + filename)
-    with open(os.path.join(FILE_ROOT, user, filename), "w") as f:
-        f.write(payload.encode('ascii'))
-
-@bottle.route('/api/delete/<filename:path>')
-@authorize()
-def api_delete(filename):
-    user = aaa.current_user.username
-    path = os.path.join(os.path.abspath(FILE_ROOT), user, filename)
-    os.remove(path)
-
-@bottle.route('/api/download/<filename:path>')
-@authorize()
-def api_download(filename):
-    user = aaa.current_user.username
-    path = os.path.join(os.path.abspath(FILE_ROOT), user, filename)
-    print ("Sending: " + filename)
-    root, name = os.path.split(path)
-    return static_file(name, root)
-
-@bottle.route('/api/list')
-@bottle.route('/api/list/')
-@bottle.route('/api/list/<directory:path>')
-@authorize()
-def api_list(directory = None):
-    user = aaa.current_user.username
-    if directory:
-        root = os.path.join(os.path.abspath(FILE_ROOT), user, directory)
-    else:
-        root = os.path.join(os.path.abspath(FILE_ROOT), user)
-
-    items = os.listdir(root)
-
-    return  { 'items': items }
-
 @bottle.route('/my_role')
 def show_current_user_role():
     """Show current user role"""
@@ -226,6 +213,7 @@ def admin():
     )
 
 
+@authorize(role="admin", fail_redirect='/sorry_page')
 @bottle.post('/create_user')
 def create_user():
     try:
@@ -236,6 +224,7 @@ def create_user():
 
 
 @bottle.post('/delete_user')
+@authorize(role="admin", fail_redirect='/sorry_page')
 def delete_user():
     try:
         aaa.delete_user(post_get('username'))
@@ -246,6 +235,7 @@ def delete_user():
 
 
 @bottle.post('/create_role')
+@authorize(role="admin", fail_redirect='/sorry_page')
 def create_role():
     try:
         aaa.create_role(post_get('role'), post_get('level'))
@@ -255,6 +245,7 @@ def create_role():
 
 
 @bottle.post('/delete_role')
+@authorize(role="admin", fail_redirect='/sorry_page')
 def delete_role():
     try:
         aaa.delete_role(post_get('role'))
@@ -262,29 +253,13 @@ def delete_role():
     except Exception as e:
         return dict(ok=False, msg=e.message)
 
-
-# Static pages
-
-@bottle.route('/login')
-@bottle.view('login_form')
-def login_form():
-    """Serve login form"""
-    return {}
-
-
-@bottle.route('/sorry_page')
-def sorry_page():
-    """Serve sorry page"""
-    return '<p>Sorry, you are not authorized to perform this action</p>'
-
-
 # #  Web application main  # #
 
 def main():
 
     # Start the Bottle webapp
     bottle.debug(True)
-    bottle.run(app=app, quiet=False, reloader=True)
+    bottle.run(host="0.0.0.0", app=app, quiet=False, reloader=True)
 
 if __name__ == "__main__":
     main()
