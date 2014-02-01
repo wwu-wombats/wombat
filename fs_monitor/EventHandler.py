@@ -1,22 +1,37 @@
 import json
 
-#import requests
-
 from watchdog.events import FileSystemEventHandler
 
 
 class EventHandler(FileSystemEventHandler):
-    def __init__(self, http_connection, url):
-        # Persistent http connection
+    def __init__(self, http_connection, url, local_index, remote_index):
         self.connection = http_connection
         self.url = url
+        self.l_index = local_index
+        self.r_index = remote_index
+
 
     def on_any_event(self, event):
-        """
-        On any event we want to possibly do logging. Anything else?
-        """
         print(event.event_type)
         self.sync(event)
+
+
+    def diff_indexes(self):
+        pass
+
+
+
+    def sync_all(self):
+        for item in self.l_index['items']:
+            if item['t'] == 'file':
+
+
+    def man_upload(self, path):
+        headers = {"Content-type" : "application/json"}
+        data = self.encrypt(path)
+        self.connection.post(self.url+"/api/create",
+                             data=data,
+                             headers=headers)
 
 
     def eventify(self, event_type):
@@ -31,7 +46,6 @@ class EventHandler(FileSystemEventHandler):
 
 
     def sync(self, event):
-
         headers = {"Content-type" : "application/json"}
         event_thing = self.eventify(event.event_type)
         data = None
@@ -94,7 +108,6 @@ class EventHandler(FileSystemEventHandler):
         self.connection.post(self.url+"/api/"+event_thing+event.src_path,
                              data=data,
                              headers=headers)
-
 
 
 
