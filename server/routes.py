@@ -67,7 +67,7 @@ def api_create(filename):
 @authorize()
 def api_delete(filename):
     user = aaa.current_user.username
-    path = os.path.join(os.path.abspath(FILE_ROOT), user, filename)
+    path = os.path.join(os.path.abspath(FILE_ROOT), user, filename.strip('/'))
     os.remove(path)
 
 @bottle.route('/api/download/<filename:path>')
@@ -86,12 +86,12 @@ def api_download(filename):
 def api_list(directory = None):
     user = aaa.current_user.username
     if directory:
-        root = os.path.join(os.path.abspath(FILE_ROOT), user, directory)
+        root = os.path.join(os.path.abspath(FILE_ROOT), user, directory.strip('/'))
     else:
         root = os.path.join(os.path.abspath(FILE_ROOT), user)
 
     if not os.path.isdir(root):
-        os.mkdir(root)
+        os.makedirs(root)
 
     items = os.listdir(root)
 
