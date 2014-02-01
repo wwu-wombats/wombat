@@ -1,0 +1,100 @@
+/*
+ * Kellen Fox 
+ * cs247 
+ * W00961302
+ * haha I don't think this is faster but i did what the assignment 
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <time.h>
+#define SIZE 0x1000000
+
+
+void *basic_memset(void *s, int c, size_t n)
+{
+    size_t cnt = 0;
+    unsigned char *schar = s;
+    while(cnt < n) {
+        *schar++ = (unsigned char) c;
+        cnt++;
+    }
+    return s;
+}
+
+void *memset(void *s, int c, size_t n)
+{
+    size_t cnt = 0;
+    unsigned short *schar = s;
+    unsigned short sc = ((unsigned char) c << 8) | (unsigned char) c;
+    while(cnt < n) {
+        *schar++ = sc;
+        cnt++;
+    }
+    return s;
+}
+
+//  void *better_memset(void *s, int c, size_t n)
+//  {
+//      size_t cnt = 0;
+//      size_t limit = n;
+//      unsigned int *sint = s;
+//      unsigned int sc = ((unsigned char) c << 8) | ((unsigned char) c << 8) | ((unsigned char) c << 8) | (unsigned char) c;
+//      if ((n % 32) != 0) {
+//          limit -= 31;
+//          while(cnt < limit) {
+//              *sint++ = sc;
+//              cnt++;
+//          }
+//          unsigned char *schar = (unsigned char)sint;
+//          while(cnt < n) {
+//              *schar++ = (char) c;
+//          return s;
+//      } 
+//      while(cnt < limit) {
+//          *sint++ = sc;
+//          cnt++;
+//      }
+//      return s;
+//  }
+
+//void *better_memset(void *s, int c, size_t n)
+//{
+//    size_t cnt = 1;
+//    size_t limit = n - 1;
+//    unsigned char *schar = s;
+//    unsigned short ul= ((unsigned char) c << 8) | (unsigned char) c;
+//    for (cnt = 0; cnt < limit; cnt+=2) {
+//        schar[cnt] = ul;
+//    }
+//    cnt++;
+//    for (; cnt < n; cnt++) {
+//        schar[cnt] = c;
+//    }
+//    return s;
+//}
+int main() 
+{
+    printf("char: %i\n short: %i\n long: %i\n", 8*sizeof(char), 8*sizeof(short), 8*sizeof(int));
+    char* buf1 = malloc(SIZE);
+    char* buf2 = malloc(SIZE);
+    char* buf3 = malloc(SIZE);
+    size_t size = 10;
+    clock_t c0, c1, c2, c3;
+    c0 = clock();
+    buf1 = basic_memset(buf1, 0xAAAAAAAA, SIZE);
+    c1 = clock();
+    buf2 = memset(buf2, 0xAAAAAAAA, SIZE);
+    c2 = clock();
+    sleep(5);
+    //buf3 = better_memset(buf3, 0xAAAAAAAA, SIZE);
+    c3 = clock();
+    int result = memcmp(buf1, buf2, sizeof(buf1));
+    int result2 = memcmp(buf1, buf3, sizeof(buf1));
+    printf("basic_memset cpu time: %f\n", (float) (c1 - c0)/CLOCKS_PER_SEC);
+    printf("memset cpu time: %f\n", (float) (c2 - c1)/CLOCKS_PER_SEC);
+    printf("better memset cpu time: %f\n", (float) (c3 - c2)/CLOCKS_PER_SEC);
+    printf("Is the same: %i\t %i\n", result, result2);
+    return 0;
+} 
