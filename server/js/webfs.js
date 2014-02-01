@@ -27,7 +27,11 @@ $(function() {
         $.get("/api/list/" + getHash(), function(data) {
             $('#list').html(Templates.list(_.extend(data, { path: getHash() })));
             $('#list li.item.dir').click(function(e) {
-                window.location.hash = '/' + getHash() + $.trim($(this).text());
+                paths = getHash().split('/');
+                paths.push($.trim($(this).text()));
+                paths = _.without(paths, "", "#", undefined);
+                console.log(paths.join('/'));
+                window.location.hash = '/' + paths.join('/');
                 loadDir();
             });
             $('#list li.item.file').click(function(e) {
@@ -35,8 +39,10 @@ $(function() {
             });
             $('#list li.item.up').click(function(e) {
                 path = window.location.hash.split('/');
+                console.log(path);
                 path.pop();
-                window.location.hash = path;
+                console.log(path);
+                window.location.hash = path.join('/');
                 loadDir();
             });
         }, "json");
