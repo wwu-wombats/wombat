@@ -51,28 +51,30 @@ def api_status():
 @authorize()
 def api_create(filename):
     user = aaa.current_user.username
-    user_path = os.path.join(os.path.abspath(FILE_ROOT), user)
+    user_path = os.path.join(os.path.abspath(FILE_ROOT), user, filename.strip('/'))
+    path, name = os.path.split(user_path)
 
-    if not os.path.isdir(user_path):
-        os.mkdir(user_path)
+    if not os.path.isdir(path):
+        os.makedirs(path)
 
+    print(bottle.request.body.read())
     payload = bottle.request.json['payload']
     print("Uploaded: " + filename)
-    with open(os.path.join(os.path.abspath(FILE_ROOT), user, filename), "w") as f:
+    with open(user_path, "w") as f:
         f.write(payload.encode('ascii'))
 
 @bottle.route('/api/delete/<filename:path>')
 @authorize()
 def api_delete(filename):
     user = aaa.current_user.username
-    path = os.path.join(os.path.abspath(FILE_ROOT), user, filename)
+    path = os.path.join(os.path.abspath(FILE_ROOT), user, filename.strip('/'))
     os.remove(path)
 
 @bottle.route('/api/download/<filename:path>')
 @authorize()
 def api_download(filename):
     user = aaa.current_user.username
-    path = os.path.join(os.path.abspath(FILE_ROOT), user, filename)
+    path = os.path.join(os.path.abspath(FILE_ROOT), user, filename.strip('/'))
     print ("Sending: " + filename)
     root, name = os.path.split(path)
     return static_file(name, root)
@@ -84,12 +86,12 @@ def api_download(filename):
 def api_list(directory = None):
     user = aaa.current_user.username
     if directory:
-        root = os.path.join(os.path.abspath(FILE_ROOT), user, directory)
+        root = os.path.join(os.path.abspath(FILE_ROOT), user, directory.strip('/'))
     else:
         root = os.path.join(os.path.abspath(FILE_ROOT), user)
 
     if not os.path.isdir(root):
-        os.mkdir(root)
+        os.makedirs(root)
 
     items = os.listdir(root)
 
