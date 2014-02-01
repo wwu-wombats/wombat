@@ -144,8 +144,11 @@ $(function() {
                         // before sending off to the api.
                     };
                 })();
-                console.log(filename.split('.').pop());
-                if (filename.split('.').pop() == "png") {
+                var ext = filename.split('.').pop();
+                if (ext == "png" ||
+                    ext == "gif" ||
+                    ext == "jpg" ||
+                    ext == "jpeg") {
                     reader.readAsDataURL(f);
                 } else {
                     reader.readAsText(f);
@@ -166,7 +169,11 @@ $(function() {
                 //var img = $('<img id="dynamic">');
                 //img.attr('src', recv.payload);
                 //img.appendTo('#list');
-                if (filename.split('.').pop() == "png") {
+                var ext = filename.split('.').pop();
+                if (ext == "png" ||
+                    ext == "gif" ||
+                    ext == "jpg" ||
+                    ext == "jpeg") {
                     window.open(recv.payload);
                 } else {
                     window.open(window.URL.createObjectURL(file));
