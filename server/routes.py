@@ -51,6 +51,7 @@ def api_status():
     return { 'status': 'online', 'time': datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')}
 
 @post('/api/create/<filename:path>')
+@post('/api/modify/<filename:path>')
 @authorize()
 def api_create(filename):
     user = aaa.current_user.username
@@ -79,6 +80,7 @@ def api_create(filename):
 
 @post('/api/move')
 @post('/api/move/')
+@post('/api/move')
 @authorize()
 def api_move():
     user = aaa.current_user.username
@@ -94,11 +96,15 @@ def api_move():
     if os.path.exists(src_path):
         os.rename(src_path, dst_path)
 
-@route('/api/delete/<filename:path>')
+@post('/api/delete')
+@post('/api/delete/')
 @authorize()
-def api_delete(filename):
+def api_delete():
     user = aaa.current_user.username
+    data = json.loads(request.body.read())
+    filename = data[u'payload']
     path = os.path.join(os.path.abspath(FILE_ROOT), user, filename.strip('/'))
+    print("Deleting: " + filename)
     os.remove(path)
 
 @route('/api/download/<filename:path>')
@@ -108,7 +114,7 @@ def api_download(filename):
     path = os.path.join(os.path.abspath(FILE_ROOT), user, filename.strip('/'))
     print ("Sending: " + filename)
     root, name = os.path.split(path)
-    return static_file(name, root)
+    return {'payload':static_file(name, root)}
 
 @route('/api/list')
 @route('/api/list/')
