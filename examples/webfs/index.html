@@ -1,13 +1,21 @@
 <html>
     <head>
         <title>Webfs</title>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script> 
-        <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/aes.js"></script>
+        <script src="libs/WorkerConsole.js"></script>
+        <script src="libs/jquery-2.1.0.min.js"></script>
+        <script src="libs/aes.js"></script>
         <script src="webfs.js"></script>
     </head>
     <body onload="init();">
-        <input type="file" id="files" name="files[]" multiple />
+        <input type="file" id="files" name="files[]" multiple>
         <output id="list"></output>
 
     </body>
+    <script id="encryptjs" type="javascript/worker">
+        self.onmessage = function(e) {
+            self.postMessage("responding");
+            console.log("hi from web worker");
+        }
+
+    </script>
 </html>

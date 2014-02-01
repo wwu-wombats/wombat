@@ -19,66 +19,40 @@ function handleFileSelect(evt) {
                 f.size, ' bytes, last modified: ',
                 f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
                 '</li>');
+    var encryptWorkerBlob = new Blob([document.querySelector('#encryptjs').textContent]);
     var reader = new FileReader(),
+        encryptWorker = new Worker(window.URL.createObjectURL(encryptWorkerBlob)),
         filename = f.name;
-    var JsonFormatter = {
-        stringify: function (cipherParams) {
-            // create json object with ciphertext
-            var jsonObj = {
-                ct: cipherParams.ciphertext.toString(CryptoJS.enc.Base64)
-            };
-
-            // optionally add iv and salt
-            if (cipherParams.iv) {
-                jsonObj.iv = cipherParams.iv.toString();
-            }
-            if (cipherParams.salt) {
-                jsonObj.s = cipherParams.salt.toString();
-            }
-
-            // stringify json object
-            return JSON.stringify(jsonObj);
-        },
-
-        parse: function (jsonStr) {
-            // parse json string
-            var jsonObj = JSON.parse(jsonStr);
-
-            // extract ciphertext from json object, and create cipher params object
-            var cipherParams = CryptoJS.lib.CipherParams.create({
-                ciphertext: CryptoJS.enc.Base64.parse(jsonObj.ct)
-            });
-
-            // optionally extract iv and salt
-            if (jsonObj.iv) {
-                cipherParams.iv = CryptoJS.enc.Hex.parse(jsonObj.iv)
-            }
-            if (jsonObj.s) {
-                cipherParams.salt = CryptoJS.enc.Hex.parse(jsonObj.s)
-            }
-
-            return cipherParams;
-        }
-    };
-    reader.onload = (function(theFile) {
+    var fsize = f.size;
+    var slicesize = 1024;
+    encryptWorker.onmessage = function(e) {
+        console.log("Received: " + e.data);
+    }
+    console.log(f);
+    /*reader.onload = (function(filepart) {
         return function (e) {
+            console.log(e);
+            console.log(reader);
             var text = reader.result;
-            var encrypted = CryptoJS.AES.encrypt(text, "asdf", { format: JsonFormatter });
-            console.log(encrypted);
-            var data = JSON.stringify({title: theFile.name, payload: encrypted + ""});
+            var encrypted = CryptoJS.AES.encrypt(text, "secretkey", { format: JsonFormatter });
+            var data = JSON.stringify({title: filepart.name, payload: encrypted + ""});
+            destencrypted.push(data);
             console.log(Object.keys(reader));
             request = $.ajax({
                 url: "/upload",
                 type: "post",
                 data: data,
-                contentType: 'application/json',                                                                                                
-                dataType: 'json', 
+                contentType: 'application/json',
+                dataType: 'json',
             });
             request.done(function(response, textStatus, jqXHR){
                 console.log("Done.");
             });
         };
-    })(f);
+    })();*/
+    reader.onprogress = (function(filepart) {
+        encryptWorker.postMessage("testing");
+    });
     reader.readAsText(f);
   }
   document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
