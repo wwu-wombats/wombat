@@ -1,8 +1,8 @@
 import dead_wombat
 crypt_key = dead_wombat.make_aes_key("secretkey")
 
-encrypted_file = open('encrypted_output', 'rb')
-file_input = encrypted_file.read()
+encrypted_file = open('server/files/admin/test.txt', 'r')
+file_input = encrypted_file.read().encode()
 print("encrypted_file is :\n",file_input)
 print("size of file is:",len(file_input))
 

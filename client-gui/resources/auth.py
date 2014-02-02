@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'auth.ui'
 #
-# Created: Sat Feb  1 15:22:02 2014
-#      by: PyQt4 UI code generator 4.10.3
+# Created: Sat Feb  1 17:21:49 2014
+#      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,16 +12,7 @@ from PyQt4 import QtCore, QtGui
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
-    def _fromUtf8(s):
-        return s
-
-try:
-    _encoding = QtGui.QApplication.UnicodeUTF8
-    def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig, _encoding)
-except AttributeError:
-    def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig)
+    _fromUtf8 = lambda s: s
 
 class Ui_authForm(object):
     def setupUi(self, authForm):
@@ -35,6 +26,7 @@ class Ui_authForm(object):
         self.username.setObjectName(_fromUtf8("username"))
         self.password = QtGui.QLineEdit(authForm)
         self.password.setGeometry(QtCore.QRect(70, 150, 240, 25))
+        self.password.setEchoMode(QtGui.QLineEdit.Password)
         self.password.setObjectName(_fromUtf8("password"))
         self.loginButton = QtGui.QPushButton(authForm)
         self.loginButton.setGeometry(QtCore.QRect(200, 190, 111, 27))
@@ -47,10 +39,10 @@ class Ui_authForm(object):
         QtCore.QMetaObject.connectSlotsByName(authForm)
 
     def retranslateUi(self, authForm):
-        authForm.setWindowTitle(_translate("authForm", "Wombat v.1 | SetUp", None))
-        self.label.setText(_translate("authForm", "<html><head/><body><p><span style=\" font-size:24pt; color:#06ccde;\">Wombat SetUp</span></p></body></html>", None))
-        self.username.setPlaceholderText(_translate("authForm", "Username", None))
-        self.password.setPlaceholderText(_translate("authForm", "Password", None))
-        self.loginButton.setText(_translate("authForm", "Log In", None))
-        self.label_2.setText(_translate("authForm", "<html><head/><body><p><span style=\" font-size:11pt; text-decoration: underline; color:#0563de;\">Log in to your wombat account to get started now!</span></p></body></html>", None))
+        authForm.setWindowTitle(QtGui.QApplication.translate("authForm", "Wombat v.1 | SetUp", None, QtGui.QApplication.UnicodeUTF8))
+        self.label.setText(QtGui.QApplication.translate("authForm", "<html><head/><body><p><span style=\" font-size:24pt; color:#06ccde;\">Wombat SetUp</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.username.setPlaceholderText(QtGui.QApplication.translate("authForm", "Username", None, QtGui.QApplication.UnicodeUTF8))
+        self.password.setPlaceholderText(QtGui.QApplication.translate("authForm", "Password", None, QtGui.QApplication.UnicodeUTF8))
+        self.loginButton.setText(QtGui.QApplication.translate("authForm", "Log In", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_2.setText(QtGui.QApplication.translate("authForm", "<html><head/><body><p><span style=\" font-size:11pt; text-decoration: underline; color:#0563de;\">Log in to your wombat account to get started now!</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
 
