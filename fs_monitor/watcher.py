@@ -67,7 +67,8 @@ def main():
     event_handler = EventHandler(session, url,
                                  local_index, remote_index,
                                  config['Data']['prefix'],
-                                 config['Data']['sync_dir']
+                                 config['Data']['sync_dir'],
+                                 config['Data']['password']
                                  )
     to_watch = Observer()
 

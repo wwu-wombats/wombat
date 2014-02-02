@@ -4,10 +4,11 @@ from watchdog.events import FileSystemEventHandler
 
 
 class EventHandler(FileSystemEventHandler):
-    def __init__(self, http_connection, url, local_index, remote_index, prefix, sync_dir):
+    def __init__(self, http_connection, url, local_index, remote_index, prefix, sync_dir, pwd):
         self.connection = http_connection
         self.url = url
         self.prefix = prefix
+        self.password = pwd
         self.sync_dir = sync_dir
         self.l_index = local_index
         self.r_index = remote_index
