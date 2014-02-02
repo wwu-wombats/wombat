@@ -213,6 +213,10 @@ def static_js(filename):
 def static_js(filename):
     return static_file(filename, 'js/libs')
 
+@route('/js/libs/crypto/rollups/<filename>')
+def static_js(filename):
+    return static_file(filename, 'js/libs/crypto/rollups')
+
 @route('/js/libs/crypto/<filename>')
 def static_js(filename):
     return static_file(filename, 'js/libs/crypto')

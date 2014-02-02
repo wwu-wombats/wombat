@@ -11,7 +11,12 @@ $(function() {
     var Templates = window.Templates;
     var encryptWorkerBlob = new Blob([document.querySelector('#encryptworker').textContent]);
     var decryptWorkerBlob = new Blob([document.querySelector('#decryptworker').textContent]);
-    var SECRETKEY = "secretkey";
+    // TODO put in web worker
+    var SECRETKEY = CryptoJS.PBKDF2("secretkey", "wombat", {
+        keySize: 256/32,
+        iterations: 1000
+    });
+    console.log(SECRETKEY);
 
     // Read hash from url to get location.
     var hashre = /^#\/(.*)$/;
@@ -35,7 +40,7 @@ $(function() {
                 pathname = $.trim($(this).closest('.item').find('.name').text());
                 deleteItem(getHash() + '/' + pathname, pathname);
             });
-            $('#list .item.dir .name, #list .item.dir .open').click(function(e) {
+            $('#list .item.dir').click(function(e) {
                 paths = getHash().split('/');
                 paths.push($.trim($(this).closest('.item').find('.name').text()));
                 paths = _.without(paths, "", "#", undefined);

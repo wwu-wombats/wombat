@@ -44,6 +44,8 @@
     <script src="/js/libs/jquery-2.1.0.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/libs/underscore-min.js"></script>
+    <script src="/js/libs/crypto/core-min.js"></script>
+    <script src="/js/libs/crypto/rollups/pbkdf2.js"></script>
 
     <script id="template-list" type="javascript/template">
         <div class="panel-heading">
