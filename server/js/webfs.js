@@ -15,8 +15,8 @@ $(function() {
     var SECRETKEY = CryptoJS.PBKDF2("secretkey", "wombat", {
         keySize: 256/32,
         iterations: 1000
-    });
-    console.log(SECRETKEY);
+    }).toString();
+    //console.log(SECRETKEY);
 
     // Read hash from url to get location.
     var hashre = /^#\/(.*)$/;
@@ -72,10 +72,8 @@ $(function() {
 
     function handleFileSelect(evt) {
         var files = evt.target.files; // FileList object
-        var $outputlist = $('#uploaded ul');
 
         // files is a FileList of File objects. List some properties.
-        var output = [];
         var request;
         for (var i = 0, f; f = files[i]; i++) {(
             // use a closure here, so each file (and reader) has it's own namespace
@@ -121,14 +119,10 @@ $(function() {
                             console.log("done");
                             console.log(e);
                             if (e.status == 200) {
-                                $outputlist.append([
-                                    '<li><strong>', escape(filename), '</strong> (',
-                                    filetype || 'n/a', ') - ', filesize,
-                                    ' bytes, last modified: ', filedate, '</li>'
-                                ].join(''));
                             } else {
                                 alert("File upload failed!")
                             }
+                            loadDir();
                         });
                     }
                 }
@@ -140,7 +134,6 @@ $(function() {
                 reader.onprogress = (function(filepart) {
                     return function(e) {
                         progressevents++;
-                        var img = $('<img />').attr('src', e.srcElement.result);
                         var text = e.srcElement.result;
                         console.log(text);
                         var message = JSON.stringify({

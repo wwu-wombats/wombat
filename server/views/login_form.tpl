@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset='utf-8'>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Webfs</title>
     <link rel="stylesheet" href="/css/bootstrap.min.css">
 </head>
@@ -65,6 +66,10 @@
                     <br />
                 </div>
             </div>
+        </div>
+        <br><br>
+        <div class="row text-center">
+            <img src="/img/wombat.gif" width="100">
         </div>
     </div>
     <script src="/js/libs/jquery-2.1.0.min.js"></script>

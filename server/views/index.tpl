@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset='utf-8'>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Webfs</title>
     <link rel="stylesheet" href="/css/bootstrap.min.css">
 </head>
@@ -31,12 +32,13 @@
     <div class="container">
         <div class="row">
             <div id="main" class="col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2">
-                <div id="list" class="panel panel-default">
-                </div>
-
+                <div id="list" class="panel panel-default"></div>
                 <input type="file" id="files" name="files[]" multiple>
-                <output id="uploaded"><ul></ul></output>
             </div>
+        </div>
+        <br><br>
+        <div class="text-center">
+            <img src="/img/wombat.gif" width="100">
         </div>
     </div>
 
@@ -145,7 +147,8 @@
         self.onmessage = function(e) {
             var recv = JSON.parse(e.data);
             var encrypted = CryptoJS.AES.encrypt(recv.payload, recv.secretkey, {
-                mode: CryptoJS.mode.ECB
+                mode: CryptoJS.mode.ECB,
+                padding: CryptoJS.pad.Pkcs7
             });
             var data = JSON.stringify({title: recv.title, part: recv.part, payload: encrypted.toString()});
             self.postMessage(data);

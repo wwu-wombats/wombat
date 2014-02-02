@@ -32,9 +32,9 @@ def list_dir(root, prefix):
 
 def main():
     config = configparser.ConfigParser()
-    config.read('~/.wombat.ini')
+    config.read('/home/gaige/.wombat.ini')
     print(config.sections())
-    paths = [config['Data']['sync_dir']]
+    paths = config['Data']['sync_dir']
     url = config['Server']['url']
     username = config['Data']['username']
     password = config['Data']['password']
