@@ -48,7 +48,7 @@ class dirSelector(QtGui.QWidget):
         self.dirSelection.dirList.insertPlainText(selection + '\n')
 
     def writeConfig(self):
-        subprocess.call(['C:\\Temp\\a b c\\Notepad.exe', 'C:\\test.txt'])
+        subprocess.call(['python3', '/home/gaige/wombat/fs_monitor/watcher.py'])
         exit()
 
 
