@@ -32,11 +32,13 @@
     <div class="container">
         <div class="row">
             <div id="main" class="col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2">
-                <div id="list" class="panel panel-default">
-                </div>
-
+                <div id="list" class="panel panel-default"></div>
                 <input type="file" id="files" name="files[]" multiple>
             </div>
+        </div>
+        <br><br>
+        <div class="text-center">
+            <img src="/img/wombat.gif" width="100">
         </div>
     </div>
 

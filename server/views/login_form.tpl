@@ -67,6 +67,10 @@
                 </div>
             </div>
         </div>
+        <br><br>
+        <div class="row text-center">
+            <img src="/img/wombat.gif" width="100">
+        </div>
     </div>
     <script src="/js/libs/jquery-2.1.0.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>

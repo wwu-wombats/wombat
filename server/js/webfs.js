@@ -15,8 +15,8 @@ $(function() {
     var SECRETKEY = CryptoJS.PBKDF2("secretkey", "wombat", {
         keySize: 256/32,
         iterations: 1000
-    });
-    console.log(SECRETKEY);
+    }).toString();
+    //console.log(SECRETKEY);
 
     // Read hash from url to get location.
     var hashre = /^#\/(.*)$/;
