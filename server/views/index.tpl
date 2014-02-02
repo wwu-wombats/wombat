@@ -30,7 +30,7 @@
 
     <div class="container">
         <div class="row">
-            <div class="col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2">
+            <div id="main" class="col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2">
                 <div id="list" class="panel panel-default">
                 </div>
 

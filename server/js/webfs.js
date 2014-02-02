@@ -212,5 +212,23 @@ $(function() {
     }
     function deleteItem(path) {
         console.log(path);
+        var delrequest = $.ajax({
+            type: 'post',
+            url: "/api/delete/",
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify({payload: path}),
+        });
+        delrequest.always(function(e) {
+            console.log("done");
+            console.log(e);
+            if (e.status == 200) {
+                ;
+            } else {
+                var alertmsg = $('<div class="alert alert-danger alert-dismissable" />').text("Couldn't delete that file.");
+                alertmsg.prependTo('#main');
+            }
+            loadDir();
+        });
     }
 });
