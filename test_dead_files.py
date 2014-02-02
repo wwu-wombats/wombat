@@ -16,6 +16,7 @@ encrypted_file.close()
 encrypt_file = open('encrypted_output', 'rb')
 file_input = encrypt_file.read()
 print("encrypted file is :\n",file_input)
+print("size of file is:",len(file_input))
 
 decoded_file = dead_wombat.aes_decrypt(crypt_key, file_input)
 print("decoded file is {\n",decoded_file,"\n}")
