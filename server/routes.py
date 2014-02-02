@@ -90,7 +90,7 @@ def api_move():
     data = json.loads(request.body.read())
 
     src = data[u'src']
-    dst = data[u'dst']
+    dst = data[u'dest']
 
     src_path = os.path.join(user_path, src.strip('/'))
     dst_path = os.path.join(user_path, dst.strpi('/'))
@@ -204,6 +204,10 @@ def static_js(filename):
 @route('/js/libs/crypto/<filename>')
 def static_js(filename):
     return static_file(filename, 'js/libs/crypto')
+
+@route('/favicon.png')
+def favicon():
+    return static_file('favicon.png', '../media')
 
 @route('/sorry_page')
 def sorry_page():
