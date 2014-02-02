@@ -12,11 +12,13 @@ class authClient(QtGui.QWidget):
         self.auth.setupUi(self)
 
         self.auth.loginButton.clicked.connect(self.authenticate)
-        #self.auth.lineEdit.returnPressed.connect(self.send)
-        #self.auth.connectButton.clicked.connect(self.connect)
-        #self.auth.disconnectButton.clicked.connect(self.disconnect)
 
     def authenticate(self):
+        username = self.auth.username.text().toAscii()
+        password = self.auth.password.text().toAscii()
+
+        print username + " " + password
+        self.showDirWidget()
 
     def showDirWidget(self):
         window.hide()
@@ -27,10 +29,19 @@ class authClient(QtGui.QWidget):
 
 class dirSelector(QtGui.QWidget):
     def __init__(self):
-       QtGui.QWidget.__init__(self)
+        QtGui.QWidget.__init__(self)
 
-       self.dirSelection = Ui_dirForm()
-       self.dirSelection.setupUi(self)
+        self.dirSelection = Ui_dirForm()
+        self.dirSelection.setupUi(self)
+
+        self.dirSelection.addDir.clicked.connect(self.chooseDir)
+
+    def chooseDir(self):
+        selection = QtGui.QFileDialog.getExistingDirectory(self, "Select Directory")
+        self.updateDirList(selection)
+
+    def updateDirList(self, selection):
+        self.dirSelection.dirList.insertPlainText(selection + '\n')
 
 def main():
     global window
