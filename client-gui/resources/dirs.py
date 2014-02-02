@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'dirs.ui'
 #
-# Created: Sat Feb  1 16:51:03 2014
+# Created: Sat Feb  1 17:37:52 2014
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -18,6 +18,9 @@ class Ui_dirForm(object):
     def setupUi(self, dirForm):
         dirForm.setObjectName(_fromUtf8("dirForm"))
         dirForm.resize(400, 300)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8("wombat.gif")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        dirForm.setWindowIcon(icon)
         dirForm.setAutoFillBackground(False)
         self.label = QtGui.QLabel(dirForm)
         self.label.setGeometry(QtCore.QRect(40, 20, 311, 21))

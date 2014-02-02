@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'auth.ui'
 #
-# Created: Sat Feb  1 17:21:49 2014
+# Created: Sat Feb  1 17:37:19 2014
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -18,6 +18,9 @@ class Ui_authForm(object):
     def setupUi(self, authForm):
         authForm.setObjectName(_fromUtf8("authForm"))
         authForm.resize(400, 300)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8("wombat.gif")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        authForm.setWindowIcon(icon)
         self.label = QtGui.QLabel(authForm)
         self.label.setGeometry(QtCore.QRect(71, 10, 240, 38))
         self.label.setObjectName(_fromUtf8("label"))
