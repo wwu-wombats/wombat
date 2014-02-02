@@ -197,6 +197,14 @@ def login_form():
     """Serve login form"""
     return {}
 
+@route('/css/<filename>')
+def static_js(filename):
+    return static_file(filename, 'css')
+
+@route('/fonts/<filename>')
+def static_js(filename):
+    return static_file(filename, 'fonts')
+
 @route('/js/<filename>')
 def static_js(filename):
     return static_file(filename, 'js')

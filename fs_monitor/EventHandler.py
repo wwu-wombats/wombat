@@ -4,34 +4,40 @@ from watchdog.events import FileSystemEventHandler
 
 
 class EventHandler(FileSystemEventHandler):
-    def __init__(self, http_connection, url, local_index, remote_index):
+    def __init__(self, http_connection, url, local_index, remote_index, prefix, sync_dir):
         self.connection = http_connection
         self.url = url
+        self.prefix = prefix
+        self.sync_dir = sync_dir
         self.l_index = local_index
         self.r_index = remote_index
+
+        self.sync_all(self.l_index['items'])
+
+
+    def sync_all(self, items):
+        for i in items:
+            if i['t'] == 'file':
+                self.man_upload(self.prefix + '/' + i['name'])
+            if not i['items'] == []:
+                self.sync_all(i['items'])
+
+
+
+    def man_upload(self, path):
+        print("uploading: ",path)
+        headers = {"Content-type" : "application/json"}
+        data = json.dumps({"payload" : self.encrypt(path),
+                           "t" : 'file'
+                           })
+        self.connection.post(self.url+"/api/create/"+path,
+                             data=data,
+                             headers=headers)
 
 
     def on_any_event(self, event):
         print(event.event_type)
         self.sync(event)
-
-
-    def diff_indexes(self):
-        pass
-
-
-
-    def sync_all(self):
-        for item in self.l_index['items']:
-            if item['t'] == 'file':
-
-
-    def man_upload(self, path):
-        headers = {"Content-type" : "application/json"}
-        data = self.encrypt(path)
-        self.connection.post(self.url+"/api/create",
-                             data=data,
-                             headers=headers)
 
 
     def eventify(self, event_type):
