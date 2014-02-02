@@ -93,7 +93,7 @@ def api_move():
     dst = data[u'dest']
 
     src_path = os.path.join(user_path, src.strip('/'))
-    dst_path = os.path.join(user_path, dst.strpi('/'))
+    dst_path = os.path.join(user_path, dst.strip('/'))
 
     if os.path.exists(src_path):
         os.rename(src_path, dst_path)
@@ -192,14 +192,6 @@ def index():
 def login_form():
     """Serve login form"""
     return {}
-
-@route('/css/<filename>')
-def static_js(filename):
-    return static_file(filename, 'css')
-
-@route('/fonts/<filename>')
-def static_js(filename):
-    return static_file(filename, 'fonts')
 
 @route('/js/<filename>')
 def static_js(filename):
