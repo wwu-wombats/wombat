@@ -49,7 +49,7 @@ class dirSelector(QtGui.QWidget):
 
     def writeConfig(self):
         subprocess.call(['C:\\Temp\\a b c\\Notepad.exe', 'C:\\test.txt'])
-
+        exit()
 
 
 def main():
