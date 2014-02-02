@@ -75,6 +75,7 @@
                     </span>
                 </li>
             <% }); %>
+            <li class="list-group-item createdir"><span class="glyphicon glyphicon-plus-sign"></span> New folder</li>
         </ul>
     </script>
     <script id="templates">

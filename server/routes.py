@@ -62,10 +62,16 @@ def api_create(filename):
     event = 'file'
     if u't' in data:
         event = data[u't']
+    print event
 
-    if event == 'dir':
+    if event == 'dir' or event == u'dir':
         if not os.path.isdir(path):
             os.makedirs(path)
+            print("made dir", path)
+            return
+        elif not os.path.isdir(user_path):
+            os.makedirs(user_path)
+            print("made dir", path)
             return
         else:
             return
