@@ -134,7 +134,6 @@ $(function() {
                 reader.onprogress = (function(filepart) {
                     return function(e) {
                         progressevents++;
-                        var img = $('<img />').attr('src', e.srcElement.result);
                         var text = e.srcElement.result;
                         console.log(text);
                         var message = JSON.stringify({
