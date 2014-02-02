@@ -35,7 +35,7 @@ $(function() {
                 pathname = $.trim($(this).closest('.item').find('.name').text());
                 deleteItem(getHash() + '/' + pathname, pathname);
             });
-            $('#list .item.dir').click(function(e) {
+            $('#list .item.dir .name, #list .item.dir .open').click(function(e) {
                 paths = getHash().split('/');
                 paths.push($.trim($(this).closest('.item').find('.name').text()));
                 paths = _.without(paths, "", "#", undefined);
