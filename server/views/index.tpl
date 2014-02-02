@@ -42,6 +42,7 @@
 
 
     <script src="/js/libs/jquery-2.1.0.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
     <script src="/js/libs/underscore-min.js"></script>
 
     <script id="template-list" type="javascript/template">
