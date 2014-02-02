@@ -49,7 +49,7 @@ class dirSelector(QtGui.QWidget):
 
     def writeConfig(self):
         window.hide()
-        subprocess.call(['python3', '/home/gaige/wombat/fs_monitor/watcher.py'])
+        subprocess.call(['python3', '../fs_monitor/watcher.py'])
 
 
 def main():

@@ -62,7 +62,6 @@ def api_create(filename):
     event = 'file'
     if u't' in data:
         event = data[u't']
-    print event
 
     if event == 'dir' or event == u'dir':
         if not os.path.isdir(path):

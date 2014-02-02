@@ -1,9 +1,5 @@
-import configparser
-import json
 import http.client
-import os
-import sys
-import time
+import os, sys, time, json
 import urllib.parse
 
 from watchdog.observers import Observer
@@ -11,6 +7,7 @@ import requests
 
 from EventHandler import EventHandler
 
+import configparser
 
 def list_dir(root, prefix):
     dir = []
@@ -32,7 +29,7 @@ def list_dir(root, prefix):
 
 def main():
     config = configparser.ConfigParser()
-    config.read('/home/gaige/.wombat.ini')
+    config.read(os.environ['HOME'] + '/.wombat.ini')
     print(config.sections())
     paths = [config['Data']['sync_dir']]
     url = config['Server']['url']
@@ -74,6 +71,8 @@ def main():
     to_watch = Observer()
 
     for path in paths:
+        if path[:2] == '~/':
+            path = os.path.join(os.environ['HOME'], path[2:])
         to_watch.schedule(event_handler, path, recursive=True)
     to_watch.start()
 
