@@ -2,7 +2,7 @@ from PyQt4 import QtGui, QtCore
 import sys, signal
 from resources.auth import Ui_authForm
 from resources.dirs import Ui_dirForm
-
+import ConfigParser, subprocess
 
 class authClient(QtGui.QWidget):
     def __init__(self):
@@ -14,27 +14,31 @@ class authClient(QtGui.QWidget):
         self.auth.loginButton.clicked.connect(self.authenticate)
 
     def authenticate(self):
-        username = self.auth.username.text().toAscii()
-        password = self.auth.password.text().toAscii()
+        self.username = self.auth.username.text().toAscii()
+        self.password = self.auth.password.text().toAscii()
 
-        print username + " " + password
         self.showDirWidget()
 
     def showDirWidget(self):
         window.hide()
         global window
-        window = dirSelector()
+        window = dirSelector(self.username, self.password)
         window.show()
 
 
 class dirSelector(QtGui.QWidget):
-    def __init__(self):
+    def __init__(self, username, password):
+
+        self.username = username
+        self.password = password
+
         QtGui.QWidget.__init__(self)
 
         self.dirSelection = Ui_dirForm()
         self.dirSelection.setupUi(self)
 
         self.dirSelection.addDir.clicked.connect(self.chooseDir)
+        self.dirSelection.finButton.clicked.connect(self.writeConfig)
 
     def chooseDir(self):
         selection = QtGui.QFileDialog.getExistingDirectory(self, "Select Directory")
@@ -42,6 +46,11 @@ class dirSelector(QtGui.QWidget):
 
     def updateDirList(self, selection):
         self.dirSelection.dirList.insertPlainText(selection + '\n')
+
+    def writeConfig(self):
+        subprocess.call(['C:\\Temp\\a b c\\Notepad.exe', 'C:\\test.txt'])
+
+
 
 def main():
     global window
