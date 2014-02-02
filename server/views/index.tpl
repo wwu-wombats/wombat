@@ -35,7 +35,6 @@
                 </div>
 
                 <input type="file" id="files" name="files[]" multiple>
-                <output id="uploaded"><ul></ul></output>
             </div>
         </div>
     </div>
@@ -145,7 +144,8 @@
         self.onmessage = function(e) {
             var recv = JSON.parse(e.data);
             var encrypted = CryptoJS.AES.encrypt(recv.payload, recv.secretkey, {
-                mode: CryptoJS.mode.ECB
+                mode: CryptoJS.mode.ECB,
+                padding: CryptoJS.pad.Pkcs7
             });
             var data = JSON.stringify({title: recv.title, part: recv.part, payload: encrypted.toString()});
             self.postMessage(data);
