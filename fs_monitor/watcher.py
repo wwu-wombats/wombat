@@ -32,7 +32,7 @@ def list_dir(root, prefix):
 
 def main():
     config = configparser.ConfigParser()
-    config.read('config.ini')
+    config.read('~/.wombat.ini')
     print(config.sections())
     paths = [config['Data']['sync_dir']]
     url = config['Server']['url']
@@ -63,6 +63,7 @@ def main():
 #    paths = sys.argv[1] or '.'
 #    print("The paths to be monitored are: ", paths)
 
+    print("Dir watch: ",paths)
 
     event_handler = EventHandler(session, url,
                                  local_index, remote_index,
