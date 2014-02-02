@@ -24,7 +24,7 @@ import pbkdf2
 from Crypto.Cipher import AES
 import base64
 import os
-from Crypto.Hash import SHA256 as SHA
+from Crypto.Hash import SHA as SHA
 import re
 import pkcs7
 import sys
@@ -55,11 +55,11 @@ def aes_crypt_pwd(password, file_name):
 
 def aes_crypt_key(key, file_name):
     padder = pkcs7.PKCS7Encoder()
-    cipher = AES.new(crypt_key)
-    file_input = open(file_name)
-    file_input = file_input.read()
-    file_input.close()
-    bad_str = padder.encode(file_input)
+    cipher = AES.new(key)
+    file_obj = open(file_name)
+    file_input = file_obj.read()
+    file_obj.close()
+    pad_str = padder.encode(file_input)
     encoded = cipher.encrypt(pad_str)
     return encoded
 
