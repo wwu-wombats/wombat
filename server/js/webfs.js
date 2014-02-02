@@ -61,6 +61,9 @@ $(function() {
                 window.location.hash = path.join('/');
                 loadDir();
             });
+            $('#list .createdir').click(function(e) {
+                createDir(prompt('Name: '));
+            });
         }, "json");
     }
 
@@ -110,7 +113,7 @@ $(function() {
                         var payload = encryptedPayload;
                         var sendrequest = $.ajax({
                             type: 'post',
-                            url: "/api/create/" + filename,
+                            url: "/api/create/" + getHash() + '/' + filename,
                             dataType: 'json',
                             contentType: 'application/json',
                             data: JSON.stringify({payload: payload}),
@@ -225,6 +228,24 @@ $(function() {
             } else {
                 var alertmsg = $('<div class="alert alert-danger alert-dismissable" />').text("Couldn't delete that file.");
                 alertmsg.prependTo('#main');
+            }
+            loadDir();
+        });
+    }
+    function createDir(path) {
+        var sendrequest = $.ajax({
+            type: 'post',
+            url: "/api/create/" + getHash() + '/' + path,
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify({t: "dir"}),
+        });
+        sendrequest.always(function(e) {
+            console.log("done");
+            console.log(e);
+            if (e.status == 200) {
+            } else {
+                alert("Couldn't create folder!")
             }
             loadDir();
         });
