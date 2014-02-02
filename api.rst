@@ -12,11 +12,12 @@ Post data to this route to upload a file
 /api/move
 =========
 Post two paths to this route to mave a to b
-Post json {'src':'sourcepath', 'dst': 'destpath' }
+Post json {'src':'sourcepath', 'dest': 'destpath' }
 
-/api/delete/<file>
+/api/delete
 ==================
 Post a path to the server for deletion
+post json {'payload': "name of file to delete"}
 
 /api/modify
 ===========
