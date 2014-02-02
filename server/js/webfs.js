@@ -12,11 +12,11 @@ $(function() {
     var encryptWorkerBlob = new Blob([document.querySelector('#encryptworker').textContent]);
     var decryptWorkerBlob = new Blob([document.querySelector('#decryptworker').textContent]);
     // TODO put in web worker
-    var SECRETKEY = CryptoJS.PBKDF2("secretkey", "wombat", {
+    var SECRETKEY = CryptoJS.enc.Hex.stringify(CryptoJS.PBKDF2("secretkey", "wombat", {
         keySize: 256/32,
         iterations: 1000
-    }).toString();
-    //console.log(SECRETKEY);
+    }));
+    console.log(SECRETKEY);
 
     // Read hash from url to get location.
     var hashre = /^#\/(.*)$/;
