@@ -90,13 +90,14 @@ def api_move():
     data = json.loads(request.body.read())
 
     src = data[u'src']
-    dst = data[u'dst']
+    dst = data[u'dest']
 
     src_path = os.path.join(user_path, src.strip('/'))
-    dst_path = os.path.join(user_path, dst.strpi('/'))
+    dst_path = os.path.join(user_path, dst.strip('/'))
+    print ("Moving " + src_path + " -> " + dst_path)
 
     if os.path.exists(src_path):
-        os.rename(src_path, dst_path)
+        os.renames(src_path, dst_path)
 
 @post('/api/delete')
 @post('/api/delete/')
@@ -107,7 +108,10 @@ def api_delete():
     filename = data[u'payload']
     path = os.path.join(os.path.abspath(FILE_ROOT), user, filename.strip('/'))
     print("Deleting: " + filename)
-    os.remove(path)
+    if os.path.isdir(path):
+        os.rmdir(path)
+    else:
+        os.remove(path)
 
 @route('/api/download/<filename:path>')
 @authorize()
@@ -212,6 +216,10 @@ def static_js(filename):
 @route('/js/libs/crypto/<filename>')
 def static_js(filename):
     return static_file(filename, 'js/libs/crypto')
+
+@route('/favicon.png')
+def favicon():
+    return static_file('favicon.png', '../media')
 
 @route('/sorry_page')
 def sorry_page():

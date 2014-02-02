@@ -1,32 +1,75 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
     <meta charset='utf-8'>
     <title>Webfs</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
 </head>
 <body>
-    <div id="urls">
-      <a href="/">index</a> <a href="/logout">logout</a>
+    <nav class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navcol">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">Wombat <small><span class="glyphicon glyphicon-cloud"></span></small></a>
+            </div>
+            <div class="collapse navbar-collapse" id="navcol">
+
+                <ul class="nav navbar-nav">
+                </ul>
+                <a href="/logout" class="btn btn-default navbar-btn navbar-right">Logout</a>
+                <p class="navbar-text navbar-right">Signed in as {{ current_user.username }}&nbsp;&nbsp;&nbsp;</p>
+
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div id="main" class="col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2">
+                <div id="list" class="panel panel-default">
+                </div>
+
+                <input type="file" id="files" name="files[]" multiple>
+                <output id="uploaded"><ul></ul></output>
+            </div>
+        </div>
     </div>
-    <h2>Welcome to Wombat</h2>
-    <p>Welcome {{current_user.username}}, your role is: {{current_user.role}}</p>
 
-    <div id="list">
-
-    </div>
-
-    <input type="file" id="files" name="files[]" multiple>
-    <output id="uploaded"><ul></ul></output>
 
     <script src="/js/libs/jquery-2.1.0.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
     <script src="/js/libs/underscore-min.js"></script>
 
     <script id="template-list" type="javascript/template">
-        <p>You are at: <%= path %>
-        <ul>
-            <li class="item up">..</li>
-            <% _.each(items, function(item) { %>
-                <li class="item <%= item.t %>"><%= item.name %></li>
+        <div class="panel-heading">
+            <h3 class="panel-title">~/<%= path %></h3>
+        </div>
+        <ul class="list-group">
+            <li class="list-group-item item up">..</li>
+            <% _.each(items, function(item) { var ext = item.name.split('.').pop()%>
+                <li class="list-group-item item <%= item.t %>">
+                    <span class="glyphicon glyphicon-<%
+                    if (item.t == 'dir') { %>folder-close<%
+                    } else if (ext == 'png' || ext == 'gif' || ext == 'jpg' || ext == 'jpeg') { %>picture<%
+                    } else if (ext == 'mov' || ext == 'avi' || ext == 'mkv' || ext == 'wmv' || ext == 'm4v' || ext == 'mp4') { %>film<%
+                    } else if (ext == 'wav' || ext == 'wma' || ext == 'aac' || ext == 'mp3' || ext == 'ogg' || ext == 'flac' || ext == 'm4a' || ext == '3gp') { %>music<%
+                    } else { %>file<% } %>
+                    "></span>&nbsp;&nbsp;
+                    <span class="name"><%= item.name %></span>
+                    <span class="pull-right">
+                        <span class="delete glyphicon glyphicon-trash"></span>&nbsp;&nbsp;
+                        <% if (item.t == "dir") { %>
+                        <span class="open glyphicon glyphicon-folder-open"></span>
+                        <% } else { %>
+                        <span class="download glyphicon glyphicon-cloud-download"></span>
+                        <% } %>
+                    </span>
+                </li>
             <% }); %>
         </ul>
     </script>

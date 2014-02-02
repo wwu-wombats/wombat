@@ -64,7 +64,12 @@ def main():
 #    print("The paths to be monitored are: ", paths)
 
 
-    event_handler = EventHandler(session, url, local_index, remote_index)
+    event_handler = EventHandler(session, url,
+                                 local_index, remote_index,
+                                 config['Data']['prefix'],
+                                 config['Data']['sync_dir'],
+                                 config['Data']['password']
+                                 )
     to_watch = Observer()
 
     for path in paths:
